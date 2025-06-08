@@ -27,9 +27,6 @@ COPY --from=builder /app/node_modules /app/node_modules
 COPY --from=builder /app/package.json /app/package.json
 
 # Environment variable for Contentful Management API token
-ENV ENABLE_HTTP_SERVER=true
-ENV HTTP_PORT=3000
-ENV HTTP_HOST=127.0.0.1
 ENV PICNIC_USERNAME=Some_username
 ENV PICNIC_PASSWORD=Some_password
 
