@@ -1,5 +1,4 @@
 // Import resource examples to register them
-import "./examples.js"
 
 // Uncomment to include custom resources
 // import "./custom-resources.js"
