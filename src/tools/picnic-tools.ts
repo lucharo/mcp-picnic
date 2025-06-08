@@ -316,6 +316,42 @@ toolRegistry.register({
   },
 })
 
+// Send delivery invoice email tool
+const sendInvoiceEmailInputSchema = z.object({
+  deliveryId: z.string().describe("The ID of the delivery to send the invoice email for"),
+})
+
+toolRegistry.register({
+  name: "picnic_send_delivery_invoice_email",
+  description: "Send or resend the invoice email for a completed delivery",
+  inputSchema: sendInvoiceEmailInputSchema,
+  handler: async (args) => {
+    const client = getPicnicClient()
+    const result = await client.sendDeliveryInvoiceEmail(args.deliveryId)
+    return {
+      message: "Delivery invoice email sent",
+      deliveryId: args.deliveryId,
+      result,
+    }
+  },
+})
+
+// Get order status tool
+const orderStatusInputSchema = z.object({
+  orderId: z.string().describe("The ID of the order to get the status for"),
+})
+
+toolRegistry.register({
+  name: "picnic_get_order_status",
+  description: "Get the status of a specific order",
+  inputSchema: orderStatusInputSchema,
+  handler: async (args) => {
+    const client = getPicnicClient()
+    const orderStatus = await client.getOrderStatus(args.orderId)
+    return orderStatus
+  },
+})
+
 // Get user details tool
 toolRegistry.register({
   name: "picnic_get_user_details",
