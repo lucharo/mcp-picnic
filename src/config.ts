@@ -4,6 +4,8 @@ import dotenv from "dotenv"
 dotenv.config()
 
 const configSchema = z.object({
+  PICNIC_USERNAME: z.string(),
+  PICNIC_PASSWORD: z.string(),
   ENABLE_HTTP_SERVER: z
     .string()
     .transform((val) => val === "true")

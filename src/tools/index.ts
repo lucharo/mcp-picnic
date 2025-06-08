@@ -1,5 +1,7 @@
 // Import tool examples to register them
-import "./examples.js"
+
+// Import Picnic API tools
+import "./picnic-tools.js"
 
 // Uncomment to include custom tools
 // import "./custom-tools.js"

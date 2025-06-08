@@ -3,9 +3,14 @@
 
 async function main() {
   // Find the delivery token argument
-  const exampleVariable = process.argv.findIndex((arg) => arg === "--example-variable")
-  if (exampleVariable !== -1 && process.argv[exampleVariable + 1]) {
-    process.env.EXAMPLE_VARIABLE = process.argv[exampleVariable + 1]
+  const picnicUsername = process.argv.findIndex((arg) => arg === "--picnic-username")
+  if (picnicUsername !== -1 && process.argv[picnicUsername + 1]) {
+    process.env.PICNIC_USERNAME = process.argv[picnicUsername + 1]
+  }
+
+  const picnicPassword = process.argv.findIndex((arg) => arg === "--picnic-password")
+  if (picnicPassword !== -1 && process.argv[picnicPassword + 1]) {
+    process.env.PICNIC_PASSWORD = process.argv[picnicPassword + 1]
   }
 
   // Find HTTP server configuration arguments
