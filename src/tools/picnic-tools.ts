@@ -2,6 +2,16 @@ import { z } from "zod"
 import { toolRegistry } from "./registry.js"
 import { getPicnicClient, initializePicnicClient } from "../utils/picnic-client.js"
 
+/**
+ * Picnic API tools optimized for LLM consumption
+ *
+ * Optimizations applied:
+ * - Search results are filtered to essential fields only (id, name, price, unit, image_id)
+ * - Pagination added to search and deliveries tools to prevent context overflow
+ * - Cart data is filtered to reduce verbosity while keeping essential information
+ * - Default limits set to reasonable values (10 for search, 10 for deliveries)
+ */
+
 // Helper function to ensure client is initialized
 async function ensureClientInitialized() {
   try {
@@ -12,23 +22,95 @@ async function ensureClientInitialized() {
   }
 }
 
+// Helper function to filter cart data for LLM consumption
+function filterCartData(cart: unknown) {
+  if (!cart || typeof cart !== "object" || !("items" in cart)) return cart
+
+  const cartObj = cart as {
+    items?: unknown[]
+    total_count?: number
+    total_price?: number
+    [key: string]: unknown
+  }
+
+  return {
+    ...cartObj,
+    items: cartObj.items?.map((item: unknown) => {
+      const itemObj = item as {
+        id?: string
+        name?: string
+        display_price?: number
+        unit_quantity?: string
+        count?: number
+        image_id?: string
+        [key: string]: unknown
+      }
+
+      return {
+        id: itemObj.id,
+        name: itemObj.name,
+        price: itemObj.display_price,
+        unit: itemObj.unit_quantity,
+        quantity: itemObj.count,
+        ...(itemObj.image_id && { image_id: itemObj.image_id }),
+      }
+    }),
+    // Keep essential cart metadata
+    total_count: cartObj.total_count,
+    total_price: cartObj.total_price,
+  }
+}
+
 // Search products tool
 const searchInputSchema = z.object({
   query: z.string().describe("Search query for products"),
+  limit: z
+    .number()
+    .min(1)
+    .max(20)
+    .default(5)
+    .describe("Maximum number of results to return (1-20, default: 5)"),
+  offset: z
+    .number()
+    .min(0)
+    .default(0)
+    .describe("Number of results to skip for pagination (default: 0)"),
 })
 
 toolRegistry.register({
   name: "picnic_search",
-  description: "Search for products in Picnic",
+  description: "Search for products in Picnic with pagination and filtered results",
   inputSchema: searchInputSchema,
   handler: async (args) => {
     await ensureClientInitialized()
     const client = getPicnicClient()
-    const results = await client.search(args.query)
+    const allResults = await client.search(args.query)
+
+    // Apply pagination
+    const startIndex = args.offset || 0
+    const limit = args.limit || 5
+    const paginatedResults = allResults.slice(startIndex, startIndex + limit)
+
+    // Filter results to only include essential data for LLM
+    const filteredResults = paginatedResults.map((product) => ({
+      id: product.id,
+      name: product.name,
+      price: product.display_price,
+      unit: product.unit_quantity,
+      // Only include image_id if it exists, for potential image retrieval
+      ...(product.image_id && { image_id: product.image_id }),
+    }))
+
     return {
       query: args.query,
-      results: results.slice(0, 20), // Limit to first 20 results
-      totalFound: results.length,
+      results: filteredResults,
+      pagination: {
+        offset: startIndex,
+        limit,
+        returned: filteredResults.length,
+        total: allResults.length,
+        hasMore: startIndex + limit < allResults.length,
+      },
     }
   },
 })
@@ -114,13 +196,13 @@ toolRegistry.register({
 // Get shopping cart tool
 toolRegistry.register({
   name: "picnic_get_cart",
-  description: "Get the current shopping cart contents",
+  description: "Get the current shopping cart contents with filtered data",
   inputSchema: z.object({}),
   handler: async () => {
     await ensureClientInitialized()
     const client = getPicnicClient()
     const cart = await client.getShoppingCart()
-    return cart
+    return filterCartData(cart)
   },
 })
 
@@ -140,7 +222,7 @@ toolRegistry.register({
     const cart = await client.addProductToShoppingCart(args.productId, args.count)
     return {
       message: `Added ${args.count} item(s) to cart`,
-      cart,
+      cart: filterCartData(cart),
     }
   },
 })
@@ -161,7 +243,7 @@ toolRegistry.register({
     const cart = await client.removeProductFromShoppingCart(args.productId, args.count)
     return {
       message: `Removed ${args.count} item(s) from cart`,
-      cart,
+      cart: filterCartData(cart),
     }
   },
 })
@@ -177,7 +259,7 @@ toolRegistry.register({
     const cart = await client.clearShoppingCart()
     return {
       message: "Shopping cart cleared",
-      cart,
+      cart: filterCartData(cart),
     }
   },
 })
@@ -219,19 +301,42 @@ toolRegistry.register({
 // Get deliveries tool
 const deliveriesInputSchema = z.object({
   filter: z.array(z.string()).default([]).describe("Filter deliveries by status"),
+  limit: z
+    .number()
+    .min(1)
+    .max(50)
+    .default(10)
+    .describe("Maximum number of deliveries to return (1-50, default: 10)"),
+  offset: z
+    .number()
+    .min(0)
+    .default(0)
+    .describe("Number of deliveries to skip for pagination (default: 0)"),
 })
 
 toolRegistry.register({
   name: "picnic_get_deliveries",
-  description: "Get past and current deliveries",
+  description: "Get past and current deliveries with pagination",
   inputSchema: deliveriesInputSchema,
   handler: async (args) => {
     await ensureClientInitialized()
     const client = getPicnicClient()
-    const deliveries = await client.getDeliveries(args.filter as string[])
+    const allDeliveries = await client.getDeliveries(args.filter as string[])
+
+    // Apply pagination
+    const startIndex = args.offset || 0
+    const limit = args.limit || 10
+    const paginatedDeliveries = allDeliveries.slice(startIndex, startIndex + limit)
+
     return {
-      deliveries,
-      count: deliveries.length,
+      deliveries: paginatedDeliveries,
+      pagination: {
+        offset: startIndex,
+        limit,
+        returned: paginatedDeliveries.length,
+        total: allDeliveries.length,
+        hasMore: startIndex + limit < allDeliveries.length,
+      },
     }
   },
 })
