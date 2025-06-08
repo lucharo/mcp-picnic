@@ -6,18 +6,7 @@ This MCP server provides tools to interact with the Picnic online supermarket AP
 
 ### Authentication
 
-#### `picnic_login`
-
-Login to Picnic to authenticate and enable other API calls.
-
-**Parameters:**
-
-- `username` (string): The username/email of the Picnic account
-- `password` (string): The password of the Picnic account
-- `countryCode` (string, optional): Country code for the requests (NL or DE, default: NL)
-- `apiVersion` (string, optional): API version to use (default: "15")
-
-**Note:** You must call this tool first before using any other Picnic tools.
+**Note:** Authentication is handled automatically using environment variables (`PICNIC_USERNAME` and `PICNIC_PASSWORD`). No manual login is required.
 
 #### `picnic_generate_2fa_code`
 
@@ -220,20 +209,9 @@ Get MGM (friends discount) details.
 
 ## Usage Example
 
-1. First, login to Picnic:
+**Note**: Authentication is handled automatically using environment variables. No manual login is required.
 
-```json
-{
-  "tool": "picnic_login",
-  "arguments": {
-    "username": "your-email@example.com",
-    "password": "your-password",
-    "countryCode": "NL"
-  }
-}
-```
-
-2. Search for products:
+1. Search for products:
 
 ```json
 {
@@ -244,7 +222,7 @@ Get MGM (friends discount) details.
 }
 ```
 
-3. Add a product to cart:
+2. Add a product to cart:
 
 ```json
 {
@@ -256,7 +234,7 @@ Get MGM (friends discount) details.
 }
 ```
 
-4. Get available delivery slots:
+3. Get available delivery slots:
 
 ```json
 {
@@ -267,10 +245,10 @@ Get MGM (friends discount) details.
 
 ## Important Notes
 
-- **Authentication Required**: Most tools require you to login first using `picnic_login`
+- **Authentication**: Authentication is handled automatically using environment variables (`PICNIC_USERNAME` and `PICNIC_PASSWORD`)
 - **Country Support**: Currently supports Netherlands (NL) and Germany (DE)
 - **Rate Limiting**: Be mindful of API rate limits when making frequent requests
-- **Security**: Credentials are not stored permanently and need to be provided for each session
+- **Security**: Credentials are read from environment variables and used to authenticate automatically when tools are called
 - **Unofficial API**: This uses an unofficial API wrapper, so functionality may change if Picnic updates their API
 
 ## Error Handling
