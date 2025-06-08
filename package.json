@@ -1,13 +1,13 @@
 {
-  "name": "mcp-server-template",
+  "name": "mcp-picnic",
   "version": "1.0.0",
-  "description": "A clean, streamlined template for creating MCP servers with TypeScript",
+  "description": "Model Context Protocol (MCP) server template for Picnic, order your groceries using AI",
   "license": "MIT",
   "type": "module",
   "main": "./dist/bundle.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ivo-toby/contentful-mcp-graphql.git"
+    "url": "git@github.com:ivo-toby/mcp-picnic.git"
   },
   "publishConfig": {
     "access": "public"
