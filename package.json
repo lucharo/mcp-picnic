@@ -1,6 +1,6 @@
 {
   "name": "mcp-picnic",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Model Context Protocol (MCP) server template for Picnic, order your groceries using AI",
   "license": "MIT",
   "type": "module",
