@@ -2,30 +2,15 @@ import { z } from "zod"
 import { toolRegistry } from "./registry.js"
 import { getPicnicClient, initializePicnicClient } from "../utils/picnic-client.js"
 
-// Login tool
-const loginInputSchema = z.object({
-  username: z.string().describe("The username/email of the Picnic account"),
-  password: z.string().describe("The password of the Picnic account"),
-  countryCode: z.enum(["NL", "DE"]).default("NL").describe("Country code for the requests"),
-  apiVersion: z.string().default("15").describe("API version to use"),
-})
-
-toolRegistry.register({
-  name: "picnic_login",
-  description: "Login to Picnic to authenticate and enable other API calls",
-  inputSchema: loginInputSchema,
-  handler: async (args) => {
-    const { username, password, countryCode, apiVersion } = args
-
-    // Use the centralized initialization with provided credentials
-    await initializePicnicClient(username, password, countryCode, apiVersion)
-
-    return {
-      success: true,
-      message: "Successfully logged in to Picnic",
-    }
-  },
-})
+// Helper function to ensure client is initialized
+async function ensureClientInitialized() {
+  try {
+    getPicnicClient()
+  } catch (error) {
+    // Client not initialized, initialize it now
+    await initializePicnicClient()
+  }
+}
 
 // Search products tool
 const searchInputSchema = z.object({
@@ -37,6 +22,7 @@ toolRegistry.register({
   description: "Search for products in Picnic",
   inputSchema: searchInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const results = await client.search(args.query)
     return {
@@ -57,6 +43,7 @@ toolRegistry.register({
   description: "Get product suggestions based on a query",
   inputSchema: suggestionsInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const suggestions = await client.getSuggestions(args.query)
     return {
@@ -76,6 +63,7 @@ toolRegistry.register({
   description: "Get detailed information about a specific product",
   inputSchema: articleInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const article = await client.getArticle(args.productId)
     return article
@@ -95,6 +83,7 @@ toolRegistry.register({
   description: "Get image data for a product using the image ID and size",
   inputSchema: imageInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const image = await client.getImage(args.imageId, args.size)
     return {
@@ -115,6 +104,7 @@ toolRegistry.register({
   description: "Get product categories from Picnic",
   inputSchema: categoriesInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const categories = await client.getCategories(args.depth)
     return categories
@@ -127,6 +117,7 @@ toolRegistry.register({
   description: "Get the current shopping cart contents",
   inputSchema: z.object({}),
   handler: async () => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const cart = await client.getShoppingCart()
     return cart
@@ -144,6 +135,7 @@ toolRegistry.register({
   description: "Add a product to the shopping cart",
   inputSchema: addToCartInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const cart = await client.addProductToShoppingCart(args.productId, args.count)
     return {
@@ -164,6 +156,7 @@ toolRegistry.register({
   description: "Remove a product from the shopping cart",
   inputSchema: removeFromCartInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const cart = await client.removeProductFromShoppingCart(args.productId, args.count)
     return {
@@ -179,6 +172,7 @@ toolRegistry.register({
   description: "Clear all items from the shopping cart",
   inputSchema: z.object({}),
   handler: async () => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const cart = await client.clearShoppingCart()
     return {
@@ -194,6 +188,7 @@ toolRegistry.register({
   description: "Get available delivery time slots",
   inputSchema: z.object({}),
   handler: async () => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const slots = await client.getDeliverySlots()
     return slots
@@ -210,6 +205,7 @@ toolRegistry.register({
   description: "Select a delivery time slot",
   inputSchema: setDeliverySlotInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const result = await client.setDeliverySlot(args.slotId)
     return {
@@ -230,8 +226,9 @@ toolRegistry.register({
   description: "Get past and current deliveries",
   inputSchema: deliveriesInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
-    const deliveries = await client.getDeliveries(args.filter as any)
+    const deliveries = await client.getDeliveries(args.filter as string[])
     return {
       deliveries,
       count: deliveries.length,
@@ -249,6 +246,7 @@ toolRegistry.register({
   description: "Get details of a specific delivery",
   inputSchema: deliveryInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const delivery = await client.getDelivery(args.deliveryId)
     return delivery
@@ -261,6 +259,7 @@ toolRegistry.register({
   description: "Get real-time position data for a delivery",
   inputSchema: deliveryInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const position = await client.getDeliveryPosition(args.deliveryId)
     return position
@@ -273,6 +272,7 @@ toolRegistry.register({
   description: "Get driver and route information for a delivery",
   inputSchema: deliveryInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const scenario = await client.getDeliveryScenario(args.deliveryId)
     return scenario
@@ -285,6 +285,7 @@ toolRegistry.register({
   description: "Cancel a delivery order",
   inputSchema: deliveryInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const result = await client.cancelDelivery(args.deliveryId)
     return {
@@ -306,6 +307,7 @@ toolRegistry.register({
   description: "Rate a completed delivery",
   inputSchema: rateDeliveryInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const result = await client.setDeliveryRating(args.deliveryId, args.rating)
     return {
@@ -326,6 +328,7 @@ toolRegistry.register({
   description: "Send or resend the invoice email for a completed delivery",
   inputSchema: sendInvoiceEmailInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const result = await client.sendDeliveryInvoiceEmail(args.deliveryId)
     return {
@@ -346,6 +349,7 @@ toolRegistry.register({
   description: "Get the status of a specific order",
   inputSchema: orderStatusInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const orderStatus = await client.getOrderStatus(args.orderId)
     return orderStatus
@@ -358,6 +362,7 @@ toolRegistry.register({
   description: "Get details of the current logged-in user",
   inputSchema: z.object({}),
   handler: async () => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const user = await client.getUserDetails()
     return user
@@ -370,6 +375,7 @@ toolRegistry.register({
   description: "Get user information including toggled features",
   inputSchema: z.object({}),
   handler: async () => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const userInfo = await client.getUserInfo()
     return userInfo
@@ -386,6 +392,7 @@ toolRegistry.register({
   description: "Get shopping lists and sublists",
   inputSchema: listsInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const lists = await client.getLists(args.depth)
     return lists
@@ -404,6 +411,7 @@ toolRegistry.register({
   description: "Get a specific list or sublist with its items",
   inputSchema: getListInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const list = await client.getList(args.listId, args.subListId || undefined, args.depth)
     return list
@@ -416,6 +424,7 @@ toolRegistry.register({
   description: "Get MGM (friends discount) details",
   inputSchema: z.object({}),
   handler: async () => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const mgmDetails = await client.getMgmDetails()
     return mgmDetails
@@ -428,6 +437,7 @@ toolRegistry.register({
   description: "Get payment information and profile",
   inputSchema: z.object({}),
   handler: async () => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const paymentProfile = await client.getPaymentProfile()
     return paymentProfile
@@ -444,6 +454,7 @@ toolRegistry.register({
   description: "Get wallet transaction history",
   inputSchema: walletTransactionsInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const pageNumber = args.pageNumber ?? 1
     const transactions = await client.getWalletTransactions(pageNumber)
@@ -464,6 +475,7 @@ toolRegistry.register({
   description: "Get detailed information about a specific wallet transaction",
   inputSchema: walletTransactionDetailsInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const details = await client.getWalletTransactionDetails(args.transactionId as string)
     return details
@@ -480,6 +492,7 @@ toolRegistry.register({
   description: "Generate a 2FA code for verification",
   inputSchema: generate2FAInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const channel = args.channel || "SMS"
     const result = await client.generate2FACode(channel)
@@ -500,6 +513,7 @@ toolRegistry.register({
   description: "Verify a 2FA code",
   inputSchema: verify2FAInputSchema,
   handler: async (args) => {
+    await ensureClientInitialized()
     const client = getPicnicClient()
     const result = await client.verify2FACode(args.code)
     return {
