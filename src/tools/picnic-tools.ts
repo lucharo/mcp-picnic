@@ -82,6 +82,29 @@ toolRegistry.register({
   },
 })
 
+// Get product image tool
+const imageInputSchema = z.object({
+  imageId: z.string().describe("The ID of the image to retrieve"),
+  size: z
+    .enum(["tiny", "small", "medium", "large", "extra-large"])
+    .describe("The size of the image"),
+})
+
+toolRegistry.register({
+  name: "picnic_get_image",
+  description: "Get image data for a product using the image ID and size",
+  inputSchema: imageInputSchema,
+  handler: async (args) => {
+    const client = getPicnicClient()
+    const image = await client.getImage(args.imageId, args.size)
+    return {
+      imageId: args.imageId,
+      size: args.size,
+      image,
+    }
+  },
+})
+
 // Get categories tool
 const categoriesInputSchema = z.object({
   depth: z.number().min(0).max(5).default(0).describe("Category depth to retrieve"),
@@ -422,10 +445,11 @@ toolRegistry.register({
   inputSchema: generate2FAInputSchema,
   handler: async (args) => {
     const client = getPicnicClient()
-    const result = await client.generate2FACode(args.channel)
+    const channel = args.channel || "SMS"
+    const result = await client.generate2FACode(channel)
     return {
       message: "2FA code generated and sent",
-      channel: args.channel,
+      channel,
       result,
     }
   },
