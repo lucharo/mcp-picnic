@@ -17,6 +17,12 @@ beforeAll(() => {
   if (!process.env.ENVIRONMENT_ID) {
     process.env.ENVIRONMENT_ID = "master"
   }
+  if (!process.env.PICNIC_USERNAME) {
+    process.env.PICNIC_USERNAME = "test-username"
+  }
+  if (!process.env.PICNIC_PASSWORD) {
+    process.env.PICNIC_PASSWORD = "test-password"
+  }
 })
 
 // Add custom matcher for error responses
