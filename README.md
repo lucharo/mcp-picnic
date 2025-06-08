@@ -418,11 +418,12 @@ The server provides comprehensive access to Picnic's functionality through 25+ s
 
 ### Authentication & Account Management
 
-- **`picnic_login`** - Login to Picnic with username/password and country code
 - **`picnic_generate_2fa_code`** - Generate 2FA verification code (SMS/other channels)
 - **`picnic_verify_2fa_code`** - Verify 2FA code for authentication
 - **`picnic_get_user_details`** - Get current user profile information
 - **`picnic_get_user_info`** - Get user information including feature toggles
+
+**Note**: Authentication is handled automatically using credentials from environment variables (`PICNIC_USERNAME` and `PICNIC_PASSWORD`). No manual login is required.
 
 ### Product Discovery & Search
 

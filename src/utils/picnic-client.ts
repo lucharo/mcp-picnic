@@ -14,7 +14,7 @@ export async function initializePicnicClient(
     return
   }
 
-  console.log("Initializing Picnic client...")
+  console.error("Initializing Picnic client...")
   const client = new PicnicClient({
     countryCode,
     apiVersion,
@@ -25,7 +25,7 @@ export async function initializePicnicClient(
 
   await client.login(loginUsername, loginPassword)
   picnicClientInstance = client
-  console.log("Picnic client initialized successfully.")
+  console.error("Picnic client initialized successfully.")
 }
 
 export function getPicnicClient(): InstanceType<typeof PicnicClient> {
