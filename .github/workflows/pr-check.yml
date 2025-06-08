@@ -5,7 +5,6 @@ on:
     types: [opened, synchronize, reopened]
     branches: 
       - main
-      - master
 
 jobs:
   verify:
@@ -25,5 +24,4 @@ jobs:
         run: npm ci
 
       - name: Run tests
-        env:
         run: npm test

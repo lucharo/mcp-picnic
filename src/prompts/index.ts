@@ -1,5 +1,5 @@
-// Import prompt examples to register them
-import "./examples.js"
+// Import Picnic-specific prompts
+import "./picnic-prompts.js"
 
 // Uncomment to include custom prompts
 // import "./custom-prompts.js"
