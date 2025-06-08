@@ -68,8 +68,8 @@ const searchInputSchema = z.object({
     .number()
     .min(1)
     .max(20)
-    .default(10)
-    .describe("Maximum number of results to return (1-20, default: 10)"),
+    .default(5)
+    .describe("Maximum number of results to return (1-20, default: 5)"),
   offset: z
     .number()
     .min(0)
@@ -88,7 +88,7 @@ toolRegistry.register({
 
     // Apply pagination
     const startIndex = args.offset || 0
-    const limit = args.limit || 10
+    const limit = args.limit || 5
     const paginatedResults = allResults.slice(startIndex, startIndex + limit)
 
     // Filter results to only include essential data for LLM
