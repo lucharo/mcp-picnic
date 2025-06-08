@@ -1,461 +1,603 @@
-# MCP Server Template
+# MCP Picnic - AI-Powered Grocery Shopping Assistant
 
-A production-ready, well-structured template for building [Model Context Protocol (MCP)](https://modelcontextprotocol.io) servers with TypeScript. This template provides a clean, maintainable foundation for creating MCP servers that can expose tools, prompts, and resources to AI applications.
+An intelligent Model Context Protocol (MCP) server that enables AI assistants to interact with Picnic, the online supermarket delivery service. This server transforms your AI assistant into a smart grocery shopping companion that can help you plan meals, manage your shopping cart, track deliveries, and optimize your grocery shopping experience.
 
-## What is this template for?
+## What is MCP Picnic?
 
-This template is designed for developers who want to:
+MCP Picnic is a bridge between AI assistants (like Claude, ChatGPT, or other MCP-compatible tools) and Picnic's grocery delivery service. It provides:
 
-- **Build MCP servers quickly** with a proven, well-structured foundation
-- **Follow MCP best practices** with a fully compliant implementation
-- **Create maintainable code** with clean abstractions and TypeScript safety
-- **Support multiple transports** (stdio and HTTP) out of the box
-- **Scale their implementation** with modular, registry-based architecture
+- **🛒 Smart Shopping**: Search products, manage your cart, and place orders through natural conversation
+- **🍽️ Meal Planning**: Get AI-powered meal plans with automatic shopping list generation
+- **💰 Budget Management**: Shop within your budget with cost-conscious recommendations
+- **🚚 Delivery Tracking**: Monitor your orders and optimize delivery schedules
+- **🥗 Dietary Support**: Find products that match your dietary restrictions and health goals
+- **📱 Complete Integration**: Access all Picnic features through your AI assistant
 
-## Who should use this?
+### Supported Countries
 
-- **AI application developers** building integrations with external data sources and tools
-- **Enterprise developers** creating internal MCP servers for company data and workflows
-- **Open source contributors** building MCP servers for the community
-- **Developers new to MCP** who want to learn best practices from a reference implementation
+- 🇳🇱 Netherlands
+- 🇩🇪 Germany
 
-## Features
+## Key Features
 
-- ✅ **Full MCP Compliance**: Implements the complete MCP specification
-- ✅ **Dual Transport Support**: Both stdio and HTTP transports included
-- ✅ **Type Safety**: Full TypeScript with strict mode and Zod validation
-- ✅ **Clean Architecture**: Modular design with clear separation of concerns
-- ✅ **Registry Pattern**: Easy registration of tools, prompts, and resources
-- ✅ **Production Ready**: Comprehensive error handling, rate limiting, timeouts, and graceful shutdown
-- ✅ **Developer Experience**: Hot reload, linting, and comprehensive tooling
-- ✅ **Extensible**: Easy to add new capabilities without breaking existing code
+### 🤖 AI-Powered Shopping Tools
 
-## Quick Start
+- **Product Search**: Find any product in Picnic's catalog
+- **Cart Management**: Add, remove, and modify items in your shopping cart
+- **Order Tracking**: Monitor delivery status and driver location
+- **Account Management**: Access your profile, payment methods, and order history
 
-### 1. Installation
+### 🎯 Intelligent Prompts
+
+- **Meal Planner**: Create weekly meal plans with automatic shopping lists
+- **Budget Shopping**: Stay within budget while maintaining quality
+- **Quick Dinners**: Find fast meal solutions for busy schedules
+- **Healthy Eating**: Get nutrition-focused product recommendations
+- **Special Occasions**: Plan for parties, holidays, and gatherings
+- **Pantry Restocking**: Maintain essential household supplies
+- **Recipe Recreation**: Find ingredients for specific recipes
+- **Dietary Substitutions**: Get alternatives for dietary restrictions
+
+## How to Use
+
+### Prerequisites
+
+- A Picnic account (available in Netherlands or Germany)
+- An MCP-compatible AI assistant (Claude Desktop, Continue, etc.)
+- Node.js 18+ installed on your system
+
+### Quick Start
+
+1. **Install the server**:
 
 ```bash
-# Clone or use this template
-git clone <repository-url>
-cd mcp-server-template
+npm install -g mcp-picnic
+```
+
+2. **Configure Claude Desktop** to use the MCP server:
+
+**macOS**: Edit `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows**: Edit `%APPDATA%\Claude\claude_desktop_config.json`
+
+Add this configuration:
+
+```json
+{
+  "mcpServers": {
+    "picnic": {
+      "command": "npx",
+      "args": ["-y", "mcp-picnic"],
+      "env": {
+        "PICNIC_USERNAME": "your-picnic-email@example.com",
+        "PICNIC_PASSWORD": "your-picnic-password"
+      }
+    }
+  }
+}
+```
+
+**Important**: Replace `your-picnic-email@example.com` and `your-picnic-password` with your actual Picnic account credentials.
+
+3. **Restart Claude Desktop** completely
+
+4. **Start using it** - you should see a 🔨 hammer icon in the input area:
+
+```
+"I want to plan meals for this week and order groceries from Picnic"
+```
+
+### Example Conversations
+
+**Meal Planning**:
+
+```
+User: "Plan healthy meals for 2 people for 5 days, budget €75"
+AI: I'll help you create a healthy meal plan! First, let me log into your Picnic account...
+```
+
+**Quick Shopping**:
+
+```
+User: "I need ingredients for pasta carbonara tonight"
+AI: Let me search for carbonara ingredients on Picnic and add them to your cart...
+```
+
+**Delivery Tracking**:
+
+```
+User: "When is my grocery delivery arriving?"
+AI: Let me check your current deliveries and their status...
+```
+
+## Setup Instructions
+
+### Option 1: Install from NPM (Recommended)
+
+```bash
+# Install globally
+npm install -g mcp-picnic
+
+# Or install locally in your project
+npm install mcp-picnic
+```
+
+### Option 2: Build from Source
+
+```bash
+# Clone the repository
+git clone https://github.com/ivo-toby/mcp-picnic.git
+cd mcp-picnic
 
 # Install dependencies
 npm install
-```
 
-### 2. Build and Run
-
-```bash
-# Build the server
+# Build the project
 npm run build
 
-# Run with stdio transport (default)
-npm start
-
-# Or run with HTTP transport
-npm start -- --enable-http --http-port 3000
+# Link globally (optional)
+npm link
 ```
 
-### 3. Test the Server
+### Configuration
+
+The server supports both stdio and HTTP transports:
+
+**Stdio Transport (Default)**:
 
 ```bash
-# Test with the MCP inspector
-npm run inspect
-
-# Or test HTTP endpoint
-curl http://localhost:3000/health
+mcp-picnic
 ```
 
-## Architecture
+**HTTP Transport**:
 
-This template is designed with a clean, modular architecture to promote maintainability and extensibility. Here's a high-level overview of the key components:
-
-### Core Components
-
-- **`src/index.ts`**: The main entry point of the server. It reads the configuration and initializes the appropriate transport.
-- **`src/config.ts`**: Centralized configuration management using `zod`. All environment variables are defined and validated in this file, providing a single source of truth for configuration.
-- **`src/transports`**: This directory contains the transport implementations. The template includes both `stdio` and `streamable-http` transports. The `streamable-http` transport is a robust implementation that includes session management, rate limiting, and other production-ready features.
-- **`src/tools`**, **`src/prompts`**, **`src/resources`**: These directories contain the registries for tools, prompts, and resources. The registry pattern makes it easy to add new capabilities to the server by simply creating a new file and registering the new tool, prompt, or resource.
-
-### Session Management
-
-Session management is handled directly within the `StreamableHttpServer` class. This simplifies the architecture and removes the need for a separate session handler. The `StreamableHttpServer` is responsible for:
-
-- Creating new sessions
-- Cleaning up sessions on timeout or disconnection
-- Enforcing session limits
-- Providing session-related health check information
-
-### Error Handling
-
-The template includes a comprehensive error handling system. All errors are normalized to a common format and include a unique error code, making it easy to debug and handle errors in a consistent way. The `src/types/errors.ts` file contains the definitions for all custom error types.
-
-## Project Structure
-
-```
-src/
-├── index.ts              # Main server entry point
-├── config.ts             # Centralized configuration management
-├── transports/           # Transport layer implementations
-│   ├── base.ts          # Abstract base class for transports
-│   ├── stdio.ts         # Stdio transport implementation
-│   └── streamable-http.ts # HTTP transport implementation
-├── tools/               # Tool definitions and registry
-│   ├── registry.ts      # Tool registry and type definitions
-│   ├── examples.ts      # Example tool implementations
-│   └── index.ts         # Tool exports
-├── prompts/             # Prompt definitions and registry
-│   ├── registry.ts      # Prompt registry and type definitions
-│   ├── examples.ts      # Example prompt implementations
-│   └── index.ts         # Prompt exports
-├── resources/           # Resource definitions and registry
-│   ├── registry.ts      # Resource registry and type definitions
-│   ├── examples.ts      # Example resource implementations
-│   └── index.ts         # Resource exports
-├── utils/               # Utility functions and server factory
-├── types/               # Additional type definitions
-└── bin/                 # CLI entry point with argument parsing
+```bash
+mcp-picnic --enable-http --http-port 3000
 ```
 
-## Creating Your First Tool
+### Environment Variables
 
-Tools are functions that AI models can call to perform actions. Here's how to create one:
+You can configure the server using environment variables:
 
-```typescript
-// src/tools/my-tools.ts
-import { z } from "zod"
-import { toolRegistry } from "./registry.js"
+```bash
+# Required: Picnic Account Credentials
+PICNIC_USERNAME=your-picnic-email@example.com
+PICNIC_PASSWORD=your-picnic-password
 
-// Define input validation schema
-const weatherInputSchema = z.object({
-  location: z.string().describe("The city or location to get weather for"),
-  units: z.enum(["celsius", "fahrenheit"]).default("celsius"),
-})
+# HTTP Transport settings (optional)
+ENABLE_HTTP_SERVER=true
+HTTP_PORT=3000
+HTTP_HOST=localhost
 
-// Register the tool
-toolRegistry.register({
-  name: "get_weather",
-  description: "Get current weather information for a location",
-  inputSchema: weatherInputSchema,
-  handler: async (args) => {
-    const { location, units } = args
+# Picnic API settings (optional)
+PICNIC_COUNTRY_CODE=NL  # or DE
+PICNIC_API_VERSION=15
+```
 
-    // Your implementation here
-    const weatherData = await fetchWeatherData(location, units)
+### MCP Client Configuration
 
-    return {
-      temperature: weatherData.temp,
-      condition: weatherData.condition,
-      location: location,
+#### Claude Desktop
+
+**Configuration File Locations:**
+
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+**Configuration:**
+
+```json
+{
+  "mcpServers": {
+    "picnic": {
+      "command": "npx",
+      "args": ["-y", "mcp-picnic"],
+      "env": {
+        "PICNIC_USERNAME": "your-picnic-email@example.com",
+        "PICNIC_PASSWORD": "your-picnic-password"
+      }
     }
-  },
-})
+  }
+}
 ```
 
-Then import your tools in `src/tools/index.ts`:
+**Important**: Replace the placeholder credentials with your actual Picnic account details.
 
-```typescript
-import "./examples.js"
-import "./my-tools.js" // Add this line
+**Setup Steps:**
 
-export { toolRegistry } from "./registry.js"
-```
+1. Open Claude Desktop
+2. Go to Claude menu → Settings (not the in-app settings)
+3. Click "Developer" in the left sidebar
+4. Click "Edit Config" to open the configuration file
+5. Add the configuration above
+6. Save the file and restart Claude Desktop
+7. Look for the 🔨 hammer icon in the input area
 
-## Creating Prompts
+#### Continue (VS Code)
 
-Prompts are templates that help users interact with AI models:
+Add to your Continue configuration:
 
-```typescript
-// src/prompts/my-prompts.ts
-import { promptRegistry } from "./registry.js"
-
-promptRegistry.register({
-  name: "code_review",
-  description: "Generate a comprehensive code review prompt",
-  arguments: [
+```json
+{
+  "mcpServers": [
     {
-      name: "code",
-      description: "The code to review",
-      required: true,
-    },
-    {
-      name: "language",
-      description: "Programming language",
-      required: false,
-    },
-  ],
-  handler: async (args) => {
-    const code = args?.code || ""
-    const language = args?.language || "unknown"
-
-    return {
-      messages: [
-        {
-          role: "system",
-          content: {
-            type: "text",
-            text: "You are an expert code reviewer. Provide constructive feedback focusing on best practices, potential bugs, and improvements.",
-          },
-        },
-        {
-          role: "user",
-          content: {
-            type: "text",
-            text: `Please review this ${language} code:\n\n${code}`,
-          },
-        },
-      ],
+      "name": "picnic",
+      "command": "npx",
+      "args": ["-y", "mcp-picnic"],
+      "env": {
+        "PICNIC_USERNAME": "your-picnic-email@example.com",
+        "PICNIC_PASSWORD": "your-picnic-password"
+      }
     }
-  },
-})
+  ]
+}
 ```
 
-## Creating Resources
+## Authentication
 
-Resources provide contextual data that AI models can access:
+The server uses the credentials configured in your environment variables:
 
-```typescript
-// src/resources/my-resources.ts
-import { resourceRegistry } from "./registry.js"
+1. **Required**: Set `PICNIC_USERNAME` and `PICNIC_PASSWORD` in your MCP configuration
+2. **2FA Support**: If 2FA is enabled on your account, the server will handle verification automatically
+3. **Session Management**: Your session will be maintained for subsequent requests
 
-resourceRegistry.register({
-  uri: "file://project-docs",
-  name: "Project Documentation",
-  description: "Access to project documentation and guides",
-  mimeType: "text/markdown",
-  handler: async () => {
-    const docs = await loadProjectDocumentation()
+**Security Note**: Your credentials are only used to authenticate with Picnic's API and are not stored permanently. They are passed securely through environment variables.
 
-    return {
-      contents: [
-        {
-          uri: "file://project-docs",
-          mimeType: "text/markdown",
-          text: docs,
-        },
-      ],
-    }
-  },
-})
-```
+## Available Tools
 
-## Error Handling
+The server provides comprehensive access to Picnic's functionality through 25+ specialized tools:
 
-This template includes comprehensive error handling for production use:
+### Authentication & Account Management
 
-### Error Types
+- **`picnic_login`** - Login to Picnic with username/password and country code
+- **`picnic_generate_2fa_code`** - Generate 2FA verification code (SMS/other channels)
+- **`picnic_verify_2fa_code`** - Verify 2FA code for authentication
+- **`picnic_get_user_details`** - Get current user profile information
+- **`picnic_get_user_info`** - Get user information including feature toggles
 
-```typescript
-import { ToolError, ErrorCode } from "./types/errors.js"
+### Product Discovery & Search
 
-// Throw specific error types
-throw new ToolError(ErrorCode.TOOL_NOT_FOUND, "Tool 'example' not found", {
-  toolName: "example",
-  availableTools: ["tool1", "tool2"],
-})
-```
+- **`picnic_search`** - Search for products by name or keywords
+- **`picnic_get_suggestions`** - Get product suggestions based on query
+- **`picnic_get_article`** - Get detailed information about a specific product
+- **`picnic_get_image`** - Get product images in various sizes (tiny to extra-large)
+- **`picnic_get_categories`** - Browse product categories with configurable depth
 
-### HTTP Transport Features
+### Shopping Cart Management
 
-- **Rate Limiting**: Configurable per-IP rate limiting
-- **Request Timeouts**: Automatic timeout handling
-- **Session Management**: Automatic session cleanup and limits
-- **Request Size Limits**: Configurable payload size limits
-- **Graceful Shutdown**: Proper cleanup of all resources
+- **`picnic_get_cart`** - View current shopping cart contents and totals
+- **`picnic_add_to_cart`** - Add products to cart with specified quantities
+- **`picnic_remove_from_cart`** - Remove products from cart with specified quantities
+- **`picnic_clear_cart`** - Clear all items from the shopping cart
 
-```typescript
-// Configure HTTP transport with error handling
-const server = new StreamableHttpServer({
-  port: 3000,
-  rateLimitConfig: {
-    windowMs: 60000, // 1 minute
-    maxRequests: 100, // 100 requests per minute
-  },
-  requestTimeoutMs: 30000, // 30 second timeout
-})
-```
+### Delivery & Order Management
 
-### Error Monitoring
+- **`picnic_get_delivery_slots`** - View available delivery time slots
+- **`picnic_set_delivery_slot`** - Select and book a delivery time slot
+- **`picnic_get_deliveries`** - Get list of past and current deliveries with filters
+- **`picnic_get_delivery`** - Get detailed information about a specific delivery
+- **`picnic_get_delivery_position`** - Track real-time driver location and ETA
+- **`picnic_get_delivery_scenario`** - Get driver and route information
+- **`picnic_cancel_delivery`** - Cancel a scheduled delivery
+- **`picnic_rate_delivery`** - Rate completed deliveries (0-10 scale)
+- **`picnic_send_delivery_invoice_email`** - Send/resend delivery invoice emails
+- **`picnic_get_order_status`** - Check status of specific orders
 
-The server provides detailed error information:
+### Lists & Organization
 
-- **Structured Error Codes**: Consistent error categorization
-- **Error Context**: Additional details for debugging
-- **Request Tracing**: Optional request/response logging
-- **Health Endpoints**: Monitor server and session status
+- **`picnic_get_lists`** - Get shopping lists and sublists with configurable depth
+- **`picnic_get_list`** - Get specific list or sublist with all items
 
-## Transport Options
+### Payment & Financial
 
-### Stdio Transport (Default)
+- **`picnic_get_payment_profile`** - View payment methods and billing information
+- **`picnic_get_wallet_transactions`** - Get wallet transaction history (paginated)
+- **`picnic_get_wallet_transaction_details`** - Get detailed transaction information
+- **`picnic_get_mgm_details`** - Get MGM (friends discount) program details
 
-Perfect for local development and integration with MCP clients:
+## Development
+
+### Running in Development Mode
 
 ```bash
-npm start
-```
+# Clone and setup
+git clone https://github.com/ivo-toby/mcp-picnic.git
+cd mcp-picnic
+npm install
 
-### HTTP Transport
-
-Ideal for remote access and web-based integrations:
-
-```bash
-npm start -- --enable-http --http-port 3000
-```
-
-The HTTP transport includes:
-
-- Session management
-- CORS support
-- Health check endpoint (`/health`)
-- Graceful shutdown
-
-## Development Workflow
-
-```bash
 # Development with hot reload
 npm run dev
+
+# Run tests
+npm test
 
 # Type checking
 npm run typecheck
 
 # Linting
 npm run lint
-npm run lint:fix
-
-# Testing
-npm run test
-npm run test:watch
-
-# Building
-npm run build
-npm run clean  # Clean build artifacts
 ```
 
-## Configuration
+### Project Structure
 
-### Environment Variables
-
-```bash
-# HTTP Transport
-ENABLE_HTTP_SERVER=true
-HTTP_PORT=3000
-HTTP_HOST=localhost
-
-# Add your own environment variables as needed
-MY_API_KEY=your-api-key
-DATABASE_URL=your-database-url
 ```
-
-### CLI Arguments
-
-```bash
-# HTTP configuration
---enable-http              # Enable HTTP transport
---http-port 3000          # Set HTTP port
---http-host localhost     # Set HTTP host
-
-# Custom arguments (extend in bin/mcp-server.js)
---example-variable value  # Example custom argument
-```
-
-## Best Practices
-
-### 1. Tool Design
-
-- **Single Responsibility**: Each tool should do one thing well
-- **Input Validation**: Always use Zod schemas for type safety
-- **Error Handling**: Provide clear, actionable error messages
-- **Documentation**: Use descriptive names and descriptions
-
-### 2. Code Organization
-
-- **Modular Structure**: Keep related functionality together
-- **Type Safety**: Leverage TypeScript's strict mode
-- **Clean Code**: Follow the established patterns in the template
-- **Testing**: Write tests for your tools and handlers
-
-### 3. Performance
-
-- **Async Operations**: Use async/await for I/O operations
-- **Resource Management**: Clean up resources properly
-- **Caching**: Cache expensive operations when appropriate
-- **Error Recovery**: Handle failures gracefully
-
-## Deployment
-
-### Local Development
-
-```bash
-npm run build
-npm start
-```
-
-### Docker
-
-```bash
-docker build -t my-mcp-server .
-docker run -p 3000:3000 my-mcp-server --enable-http
-```
-
-### Production
-
-- Use process managers like PM2 or systemd
-- Set up proper logging and monitoring
-- Configure environment variables securely
-- Use HTTPS for HTTP transport in production
-
-## Examples and Use Cases
-
-This template includes examples for:
-
-- **Calculator Tool**: Basic arithmetic operations
-- **Echo Tool**: Message processing and repetition
-- **Time Tool**: Current time in various formats
-- **Code Review Prompt**: Structured code review templates
-- **Documentation Resources**: Access to project documentation
-
-Common use cases for MCP servers:
-
-- **Database Integration**: Query and update databases
-- **API Wrappers**: Integrate with external APIs
-- **File System Access**: Read and write files
-- **Development Tools**: Code analysis, testing, deployment
-- **Business Logic**: Custom workflows and processes
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Build Errors**: Ensure TypeScript and dependencies are up to date
-2. **Transport Issues**: Check port availability and firewall settings
-3. **Tool Registration**: Verify tools are imported in index files
-4. **Type Errors**: Use proper Zod schemas and TypeScript types
-
-### Debug Mode
-
-```bash
-# Enable debug logging
-DEBUG=mcp:* npm start
-
-# Inspect server capabilities
-npm run inspect
+src/
+├── index.ts              # Main server entry point
+├── config.ts             # Configuration management
+├── tools/                # Picnic API tool implementations
+├── prompts/              # AI prompt templates
+├── resources/            # Resource definitions
+├── handlers/             # Request handlers
+├── transports/           # Transport layer (stdio/HTTP)
+└── utils/                # Utility functions
 ```
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Ensure all tests pass
-5. Submit a pull request
+We welcome contributions! Please see our [contributing guidelines](CONTRIBUTING.md) for details.
 
 ## License
 
-MIT License - see LICENSE file for details.
+MIT License - see [LICENSE](LICENSE) file for details.
 
-## Resources
+## Support
 
-- [Model Context Protocol Documentation](https://modelcontextprotocol.io)
-- [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)
-- [MCP Specification](https://modelcontextprotocol.io/specification)
-- [Example MCP Servers](https://github.com/modelcontextprotocol/servers)
+- 📖 [Documentation](https://github.com/ivo-toby/mcp-picnic/wiki)
+- 🐛 [Report Issues](https://github.com/ivo-toby/mcp-picnic/issues)
+- 💬 [Discussions](https://github.com/ivo-toby/mcp-picnic/discussions)
+
+---
+
+# MCP Picnic - AI-Gestuurde Boodschappen Assistent (Nederlands)
+
+Een intelligente Model Context Protocol (MCP) server die AI-assistenten in staat stelt om te communiceren met Picnic, de online supermarkt bezorgservice. Deze server transformeert je AI-assistent in een slimme boodschappen-companion die je kan helpen met maaltijdplanning, het beheren van je winkelwagen, het volgen van leveringen, en het optimaliseren van je boodschappen-ervaring.
+
+## Wat is MCP Picnic?
+
+MCP Picnic is een brug tussen AI-assistenten (zoals Claude, ChatGPT, of andere MCP-compatibele tools) en Picnic's bezorgservice voor boodschappen. Het biedt:
+
+- **🛒 Slim Winkelen**: Zoek producten, beheer je winkelwagen, en plaats bestellingen via natuurlijke conversatie
+- **🍽️ Maaltijdplanning**: Krijg AI-gestuurde maaltijdplannen met automatische boodschappenlijst generatie
+- **💰 Budget Beheer**: Shop binnen je budget met kostenefficiënte aanbevelingen
+- **🚚 Bezorging Volgen**: Monitor je bestellingen en optimaliseer bezorgschema's
+- **🥗 Dieet Ondersteuning**: Vind producten die passen bij je dieetbeperkingen en gezondheidsdoelen
+- **📱 Volledige Integratie**: Toegang tot alle Picnic functies via je AI-assistent
+
+### Ondersteunde Landen
+
+- 🇳🇱 Nederland
+- 🇩🇪 Duitsland
+
+## Belangrijkste Functies
+
+### 🤖 AI-Gestuurde Winkel Tools
+
+- **Product Zoeken**: Vind elk product in Picnic's catalogus
+- **Winkelwagen Beheer**: Voeg toe, verwijder, en wijzig items in je winkelwagen
+- **Bestelling Volgen**: Monitor bezorgstatus en chauffeur locatie
+- **Account Beheer**: Toegang tot je profiel, betaalmethoden, en bestelgeschiedenis
+
+### 🎯 Intelligente Prompts
+
+- **Maaltijdplanner**: Creëer wekelijkse maaltijdplannen met automatische boodschappenlijsten
+- **Budget Winkelen**: Blijf binnen budget terwijl je kwaliteit behoudt
+- **Snelle Diners**: Vind snelle maaltijdoplossingen voor drukke schema's
+- **Gezond Eten**: Krijg voeding-gerichte productaanbevelingen
+- **Speciale Gelegenheden**: Plan voor feesten, vakanties, en bijeenkomsten
+- **Voorraadkast Aanvullen**: Onderhoud essentiële huishoudelijke benodigdheden
+- **Recept Recreatie**: Vind ingrediënten voor specifieke recepten
+- **Dieet Vervangingen**: Krijg alternatieven voor dieetbeperkingen
+
+## Hoe te Gebruiken
+
+### Vereisten
+
+- Een Picnic account (beschikbaar in Nederland of Duitsland)
+- Een MCP-compatibele AI-assistent (Claude Desktop, Continue, etc.)
+- Node.js 18+ geïnstalleerd op je systeem
+
+### Snelle Start
+
+1. **Installeer de server**:
+
+```bash
+npm install -g mcp-picnic
+```
+
+2. **Configureer Claude Desktop** om de MCP server te gebruiken:
+
+**macOS**: Bewerk `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows**: Bewerk `%APPDATA%\Claude\claude_desktop_config.json`
+
+Voeg deze configuratie toe:
+
+```json
+{
+  "mcpServers": {
+    "picnic": {
+      "command": "npx",
+      "args": ["-y", "mcp-picnic"],
+      "env": {
+        "PICNIC_USERNAME": "jouw-picnic-email@example.com",
+        "PICNIC_PASSWORD": "jouw-picnic-wachtwoord"
+      }
+    }
+  }
+}
+```
+
+**Belangrijk**: Vervang `jouw-picnic-email@example.com` en `jouw-picnic-wachtwoord` met je echte Picnic account gegevens.
+
+3. **Herstart Claude Desktop** volledig
+
+4. **Begin met gebruiken** - je zou een 🔨 hamer icoon moeten zien in het invoerveld:
+
+```
+"Ik wil maaltijden plannen voor deze week en boodschappen bestellen bij Picnic"
+```
+
+## Setup Instructies
+
+### Optie 1: Installeer van NPM (Aanbevolen)
+
+```bash
+# Installeer globaal
+npm install -g mcp-picnic
+
+# Of installeer lokaal in je project
+npm install mcp-picnic
+```
+
+### Optie 2: Bouw van Bron
+
+```bash
+# Kloon de repository
+git clone https://github.com/ivo-toby/mcp-picnic.git
+cd mcp-picnic
+
+# Installeer dependencies
+npm install
+
+# Bouw het project
+npm run build
+
+# Link globaal (optioneel)
+npm link
+```
+
+## Authenticatie
+
+De server gebruikt de inloggegevens die geconfigureerd zijn in je omgevingsvariabelen:
+
+1. **Vereist**: Stel `PICNIC_USERNAME` en `PICNIC_PASSWORD` in je MCP configuratie in
+2. **2FA Ondersteuning**: Als 2FA is ingeschakeld op je account, handelt de server verificatie automatisch af
+3. **Sessiebeheer**: Je sessie wordt onderhouden voor volgende verzoeken
+
+**Beveiligingsnotitie**: Je inloggegevens worden alleen gebruikt om te authenticeren met Picnic's API en worden niet permanent opgeslagen. Ze worden veilig doorgegeven via omgevingsvariabelen.
+
+---
+
+# MCP Picnic - KI-Gesteuerte Lebensmittel-Einkaufsassistent (Deutsch)
+
+Ein intelligenter Model Context Protocol (MCP) Server, der KI-Assistenten ermöglicht, mit Picnic, dem Online-Supermarkt-Lieferservice, zu interagieren. Dieser Server verwandelt Ihren KI-Assistenten in einen intelligenten Einkaufsbegleiter, der Ihnen bei der Mahlzeitenplanung, der Verwaltung Ihres Einkaufswagens, der Verfolgung von Lieferungen und der Optimierung Ihres Einkaufserlebnisses helfen kann.
+
+## Was ist MCP Picnic?
+
+MCP Picnic ist eine Brücke zwischen KI-Assistenten (wie Claude, ChatGPT oder anderen MCP-kompatiblen Tools) und Picnics Lebensmittel-Lieferservice. Es bietet:
+
+- **🛒 Intelligentes Einkaufen**: Suchen Sie Produkte, verwalten Sie Ihren Warenkorb und geben Sie Bestellungen über natürliche Unterhaltung auf
+- **🍽️ Mahlzeitenplanung**: Erhalten Sie KI-gesteuerte Mahlzeitenpläne mit automatischer Einkaufslistenerstellung
+- **💰 Budget-Management**: Kaufen Sie innerhalb Ihres Budgets mit kostenbewussten Empfehlungen ein
+- **🚚 Lieferverfolgung**: Überwachen Sie Ihre Bestellungen und optimieren Sie Lieferpläne
+- **🥗 Diät-Unterstützung**: Finden Sie Produkte, die zu Ihren Ernährungseinschränkungen und Gesundheitszielen passen
+- **📱 Vollständige Integration**: Zugriff auf alle Picnic-Funktionen über Ihren KI-Assistenten
+
+### Unterstützte Länder
+
+- 🇳🇱 Niederlande
+- 🇩🇪 Deutschland
+
+## Hauptfunktionen
+
+### 🤖 KI-Gesteuerte Einkaufs-Tools
+
+- **Produktsuche**: Finden Sie jedes Produkt in Picnics Katalog
+- **Warenkorbverwaltung**: Hinzufügen, entfernen und ändern Sie Artikel in Ihrem Warenkorb
+- **Bestellverfolgung**: Überwachen Sie Lieferstatus und Fahrerstandort
+- **Kontoverwaltung**: Zugriff auf Ihr Profil, Zahlungsmethoden und Bestellhistorie
+
+### 🎯 Intelligente Prompts
+
+- **Mahlzeitenplaner**: Erstellen Sie wöchentliche Mahlzeitenpläne mit automatischen Einkaufslisten
+- **Budget-Einkauf**: Bleiben Sie im Budget und behalten dabei die Qualität bei
+- **Schnelle Abendessen**: Finden Sie schnelle Mahlzeitenlösungen für geschäftige Zeitpläne
+- **Gesunde Ernährung**: Erhalten Sie ernährungsorientierte Produktempfehlungen
+- **Besondere Anlässe**: Planen Sie für Partys, Feiertage und Versammlungen
+- **Vorratskammer-Auffüllung**: Pflegen Sie wesentliche Haushaltsvorräte
+- **Rezept-Nachstellung**: Finden Sie Zutaten für spezifische Rezepte
+- **Diät-Ersatz**: Erhalten Sie Alternativen für Ernährungseinschränkungen
+
+## Wie zu Verwenden
+
+### Voraussetzungen
+
+- Ein Picnic-Konto (verfügbar in den Niederlanden oder Deutschland)
+- Ein MCP-kompatibler KI-Assistent (Claude Desktop, Continue, etc.)
+- Node.js 18+ auf Ihrem System installiert
+
+### Schnellstart
+
+1. **Installieren Sie den Server**:
+
+```bash
+npm install -g mcp-picnic
+```
+
+2. **Konfigurieren Sie Claude Desktop**, um den MCP-Server zu verwenden:
+
+**macOS**: Bearbeiten Sie `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows**: Bearbeiten Sie `%APPDATA%\Claude\claude_desktop_config.json`
+
+Fügen Sie diese Konfiguration hinzu:
+
+```json
+{
+  "mcpServers": {
+    "picnic": {
+      "command": "npx",
+      "args": ["-y", "mcp-picnic"],
+      "env": {
+        "PICNIC_USERNAME": "ihre-picnic-email@example.com",
+        "PICNIC_PASSWORD": "ihr-picnic-passwort"
+      }
+    }
+  }
+}
+```
+
+**Wichtig**: Ersetzen Sie `ihre-picnic-email@example.com` und `ihr-picnic-passwort` mit Ihren tatsächlichen Picnic-Kontodaten.
+
+3. **Starten Sie Claude Desktop** vollständig neu
+
+4. **Beginnen Sie mit der Nutzung** - Sie sollten ein 🔨 Hammer-Symbol im Eingabebereich sehen:
+
+```
+"Ich möchte Mahlzeiten für diese Woche planen und Lebensmittel bei Picnic bestellen"
+```
+
+## Setup-Anweisungen
+
+### Option 1: Von NPM installieren (Empfohlen)
+
+```bash
+# Global installieren
+npm install -g mcp-picnic
+
+# Oder lokal in Ihrem Projekt installieren
+npm install mcp-picnic
+```
+
+### Option 2: Aus Quelle erstellen
+
+```bash
+# Repository klonen
+git clone https://github.com/ivo-toby/mcp-picnic.git
+cd mcp-picnic
+
+# Abhängigkeiten installieren
+npm install
+
+# Projekt erstellen
+npm run build
+
+# Global verknüpfen (optional)
+npm link
+```
+
+## Authentifizierung
+
+Der Server verwendet die in Ihren Umgebungsvariablen konfigurierten Anmeldedaten:
+
+1. **Erforderlich**: Setzen Sie `PICNIC_USERNAME` und `PICNIC_PASSWORD` in Ihrer MCP-Konfiguration
+2. **2FA-Unterstützung**: Wenn 2FA auf Ihrem Konto aktiviert ist, handhabt der Server die Verifizierung automatisch
+3. **Sitzungsverwaltung**: Ihre Sitzung wird für nachfolgende Anfragen beibehalten
+
+**Sicherheitshinweis**: Ihre Anmeldedaten werden nur zur Authentifizierung mit Picnics API verwendet und nicht dauerhaft gespeichert. Sie werden sicher über Umgebungsvariablen übertragen.
