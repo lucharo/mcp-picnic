@@ -30,6 +30,8 @@ COPY --from=builder /app/package.json /app/package.json
 ENV ENABLE_HTTP_SERVER=true
 ENV HTTP_PORT=3000
 ENV HTTP_HOST=127.0.0.1
+ENV PICNIC_USERNAME=Some_username
+ENV PICNIC_PASSWORD=Some_password
 
 # Expose any required ports (if needed by the application)
 # EXPOSE 3000

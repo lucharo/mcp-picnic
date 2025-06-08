@@ -6,16 +6,44 @@ startCommand:
     # JSON Schema defining the configuration options for the MCP.
     type: object
     required:
-      - contentfulDeliveryAccessToken
-      - spaceId
+      - picnicUsername
+      - picnicPassword
     properties:
-      contentfulDeliveryAccessToken:
+      picnicUsername:
         type: string
-        description: Your Delivery API token from Contentful
-      spaceId:
+        description: Your Picnic account username/email
+      picnicPassword:
         type: string
-        description: Your Contentful Space ID
+        description: Your Picnic account password
+      picnicCountryCode:
+        type: string
+        description: Country code for Picnic (NL or DE)
+        default: "NL"
+        enum: ["NL", "DE"]
+      enableHttpServer:
+        type: boolean
+        description: Enable HTTP server mode
+        default: false
+      httpPort:
+        type: integer
+        description: HTTP server port
+        default: 3000
+      httpHost:
+        type: string
+        description: HTTP server host
+        default: "localhost"
   commandFunction:
     # A function that produces the CLI command to start the MCP on stdio.
     |-
-    (config) => ({ command: 'node', args: ['bin/mcp-server.js'], env: { CONTENTFUL_DELIVERY_ACCESS_TOKEN: config.contentfulDeliveryAccessToken, SPACE_ID: config.spaceId } })
+    (config) => ({
+      command: 'node',
+      args: ['bin/mcp-server.js'],
+      env: {
+        PICNIC_USERNAME: config.picnicUsername,
+        PICNIC_PASSWORD: config.picnicPassword,
+        PICNIC_COUNTRY_CODE: config.picnicCountryCode || 'NL',
+        ENABLE_HTTP_SERVER: config.enableHttpServer ? 'true' : 'false',
+        HTTP_PORT: config.httpPort?.toString() || '3000',
+        HTTP_HOST: config.httpHost || 'localhost'
+      }
+    })
