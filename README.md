@@ -109,6 +109,177 @@ User: "When is my grocery delivery arriving?"
 AI: Let me check your current deliveries and their status...
 ```
 
+## Use Cases
+
+Here are some practical scenarios where MCP Picnic can transform your grocery shopping experience:
+
+### 🍽️ **Smart Meal Planning**
+
+**Scenario**: Planning a week's worth of healthy meals for a family of 4
+
+```
+User: "Plan 7 dinners for 4 people, focusing on Mediterranean diet, budget €100"
+
+AI Actions:
+1. Uses picnic_search to find Mediterranean ingredients
+2. Uses picnic_get_suggestions for recipe ideas
+3. Uses picnic_add_to_cart to build shopping list
+4. Uses picnic_get_cart to verify total cost
+5. Uses picnic_get_delivery_slots to schedule delivery
+```
+
+### 🛒 **Intelligent Shopping Assistant**
+
+**Scenario**: Recreating a specific recipe with dietary substitutions
+
+```
+User: "I want to make lasagna but need gluten-free and dairy-free alternatives"
+
+AI Actions:
+1. Uses picnic_search to find gluten-free pasta
+2. Uses picnic_get_suggestions for dairy-free cheese alternatives
+3. Uses picnic_get_article to check ingredient details
+4. Uses picnic_add_to_cart to add suitable products
+5. Provides cooking tips and substitution ratios
+```
+
+### 📦 **Delivery Optimization**
+
+**Scenario**: Managing multiple deliveries and tracking orders
+
+```
+User: "What's the status of all my orders and when will they arrive?"
+
+AI Actions:
+1. Uses picnic_get_deliveries to list all current orders
+2. Uses picnic_get_delivery_position for real-time tracking
+3. Uses picnic_get_delivery_scenario for driver details
+4. Suggests optimal delivery slots using picnic_get_delivery_slots
+5. Sends invoice emails using picnic_send_delivery_invoice_email
+```
+
+### 💰 **Budget-Conscious Shopping**
+
+**Scenario**: Shopping within a strict budget while maintaining quality
+
+```
+User: "I have €50 for groceries this week, help me maximize value"
+
+AI Actions:
+1. Uses picnic_search to find budget-friendly staples
+2. Uses picnic_get_categories to explore discount sections
+3. Uses picnic_get_cart to track running total
+4. Uses picnic_remove_from_cart if budget exceeded
+5. Uses picnic_get_wallet_transactions to track spending patterns
+```
+
+### 🏠 **Household Management**
+
+**Scenario**: Managing shopping lists for different family members
+
+```
+User: "Create separate shopping lists for weekly groceries and party supplies"
+
+AI Actions:
+1. Uses picnic_get_lists to view existing lists
+2. Uses picnic_get_list to check current items
+3. Uses picnic_search to find party-specific items
+4. Organizes items by category using picnic_get_categories
+5. Uses picnic_add_to_cart when ready to order
+```
+
+### 🎉 **Event Planning**
+
+**Scenario**: Planning a dinner party for 12 guests
+
+```
+User: "I'm hosting a dinner party for 12 people next Saturday, help me plan"
+
+AI Actions:
+1. Uses picnic_search to find appetizer, main course, and dessert ingredients
+2. Uses picnic_get_suggestions for wine pairings
+3. Uses picnic_get_delivery_slots to schedule Friday delivery
+4. Uses picnic_set_delivery_slot to book optimal time
+5. Uses picnic_get_article to check product availability and sizes
+```
+
+### 🥗 **Health & Dietary Management**
+
+**Scenario**: Managing specific dietary requirements (diabetes, allergies)
+
+```
+User: "Find low-carb options for a diabetic-friendly weekly menu"
+
+AI Actions:
+1. Uses picnic_search with specific dietary keywords
+2. Uses picnic_get_article to check nutritional information
+3. Uses picnic_get_suggestions for healthy alternatives
+4. Uses picnic_add_to_cart for approved items only
+5. Tracks nutritional goals across multiple meals
+```
+
+### 📱 **Smart Reordering**
+
+**Scenario**: Automatically reordering household essentials
+
+```
+User: "Reorder my usual weekly essentials and add some new seasonal items"
+
+AI Actions:
+1. Uses picnic_get_user_details to check purchase history
+2. Uses picnic_get_wallet_transactions to identify regular purchases
+3. Uses picnic_search to find seasonal products
+4. Uses picnic_add_to_cart for both regular and new items
+5. Uses picnic_get_delivery_slots for convenient scheduling
+```
+
+### 🎯 **Price Comparison & Optimization**
+
+**Scenario**: Finding the best value products across categories
+
+```
+User: "Compare prices for organic vs conventional produce this week"
+
+AI Actions:
+1. Uses picnic_search for both organic and conventional items
+2. Uses picnic_get_article to compare prices and sizes
+3. Uses picnic_get_categories to explore different brands
+4. Uses picnic_get_suggestions for similar products
+5. Provides detailed cost analysis and recommendations
+```
+
+### 🚚 **Delivery Experience Management**
+
+**Scenario**: Optimizing delivery experience and providing feedback
+
+```
+User: "Track my delivery and rate the service quality"
+
+AI Actions:
+1. Uses picnic_get_delivery_position for real-time tracking
+2. Uses picnic_get_delivery_scenario for driver communication
+3. Uses picnic_rate_delivery after completion
+4. Uses picnic_send_delivery_invoice_email for records
+5. Uses picnic_get_mgm_details to share referral benefits
+```
+
+### 💳 **Financial Tracking**
+
+**Scenario**: Managing grocery budget and payment methods
+
+```
+User: "Show me my grocery spending patterns and optimize my payment setup"
+
+AI Actions:
+1. Uses picnic_get_wallet_transactions for spending analysis
+2. Uses picnic_get_wallet_transaction_details for detailed breakdowns
+3. Uses picnic_get_payment_profile to review payment methods
+4. Provides insights on spending trends and budget optimization
+5. Suggests cost-saving strategies based on purchase history
+```
+
+These use cases demonstrate how MCP Picnic transforms simple grocery shopping into an intelligent, personalized experience that saves time, money, and effort while ensuring you never miss essential items or optimal deals.
+
 ## Setup Instructions
 
 ### Option 1: Install from NPM (Recommended)
@@ -473,6 +644,177 @@ De server gebruikt de inloggegevens die geconfigureerd zijn in je omgevingsvaria
 
 **Beveiligingsnotitie**: Je inloggegevens worden alleen gebruikt om te authenticeren met Picnic's API en worden niet permanent opgeslagen. Ze worden veilig doorgegeven via omgevingsvariabelen.
 
+## Gebruiksscenario's
+
+Hier zijn enkele praktische scenario's waarin MCP Picnic je boodschappen-ervaring kan transformeren:
+
+### 🍽️ **Slimme Maaltijdplanning**
+
+**Scenario**: Een week vol gezonde maaltijden plannen voor een gezin van 4
+
+```
+Gebruiker: "Plan 7 avondmaaltijden voor 4 personen, focus op mediterraan dieet, budget €100"
+
+AI Acties:
+1. Gebruikt picnic_search om mediterrane ingrediënten te vinden
+2. Gebruikt picnic_get_suggestions voor recept ideeën
+3. Gebruikt picnic_add_to_cart om boodschappenlijst op te bouwen
+4. Gebruikt picnic_get_cart om totale kosten te verifiëren
+5. Gebruikt picnic_get_delivery_slots om bezorging in te plannen
+```
+
+### 🛒 **Intelligente Boodschappen Assistent**
+
+**Scenario**: Een specifiek recept recreëren met dieet vervangingen
+
+```
+Gebruiker: "Ik wil lasagne maken maar heb glutenvrije en zuivelvrije alternatieven nodig"
+
+AI Acties:
+1. Gebruikt picnic_search om glutenvrije pasta te vinden
+2. Gebruikt picnic_get_suggestions voor zuivelvrije kaas alternatieven
+3. Gebruikt picnic_get_article om ingrediënt details te controleren
+4. Gebruikt picnic_add_to_cart om geschikte producten toe te voegen
+5. Geeft kooktips en vervangingsverhoudingen
+```
+
+### 📦 **Bezorging Optimalisatie**
+
+**Scenario**: Meerdere bezorgingen beheren en bestellingen volgen
+
+```
+Gebruiker: "Wat is de status van al mijn bestellingen en wanneer komen ze aan?"
+
+AI Acties:
+1. Gebruikt picnic_get_deliveries om alle huidige bestellingen te tonen
+2. Gebruikt picnic_get_delivery_position voor real-time tracking
+3. Gebruikt picnic_get_delivery_scenario voor chauffeur details
+4. Stelt optimale bezorgtijden voor met picnic_get_delivery_slots
+5. Verstuurt factuur emails met picnic_send_delivery_invoice_email
+```
+
+### 💰 **Budget-Bewust Winkelen**
+
+**Scenario**: Winkelen binnen een strikt budget terwijl kwaliteit behouden blijft
+
+```
+Gebruiker: "Ik heb €50 voor boodschappen deze week, help me de waarde te maximaliseren"
+
+AI Acties:
+1. Gebruikt picnic_search om budget-vriendelijke basisproducten te vinden
+2. Gebruikt picnic_get_categories om kortingssecties te verkennen
+3. Gebruikt picnic_get_cart om lopend totaal bij te houden
+4. Gebruikt picnic_remove_from_cart als budget overschreden wordt
+5. Gebruikt picnic_get_wallet_transactions om uitgavenpatronen te volgen
+```
+
+### 🏠 **Huishouden Beheer**
+
+**Scenario**: Boodschappenlijsten beheren voor verschillende gezinsleden
+
+```
+Gebruiker: "Maak aparte boodschappenlijsten voor wekelijkse boodschappen en feestbenodigdheden"
+
+AI Acties:
+1. Gebruikt picnic_get_lists om bestaande lijsten te bekijken
+2. Gebruikt picnic_get_list om huidige items te controleren
+3. Gebruikt picnic_search om feest-specifieke items te vinden
+4. Organiseert items per categorie met picnic_get_categories
+5. Gebruikt picnic_add_to_cart wanneer klaar om te bestellen
+```
+
+### 🎉 **Evenement Planning**
+
+**Scenario**: Een dinerfeest plannen voor 12 gasten
+
+```
+Gebruiker: "Ik organiseer een dinerfeest voor 12 personen aanstaande zaterdag, help me plannen"
+
+AI Acties:
+1. Gebruikt picnic_search om voorgerechten, hoofdgerechten en dessert ingrediënten te vinden
+2. Gebruikt picnic_get_suggestions voor wijn combinaties
+3. Gebruikt picnic_get_delivery_slots om vrijdag bezorging in te plannen
+4. Gebruikt picnic_set_delivery_slot om optimale tijd te boeken
+5. Gebruikt picnic_get_article om product beschikbaarheid en maten te controleren
+```
+
+### 🥗 **Gezondheid & Dieet Beheer**
+
+**Scenario**: Specifieke dieetvereisten beheren (diabetes, allergieën)
+
+```
+Gebruiker: "Vind koolhydraatarme opties voor een diabetesvriendelijk weekmenu"
+
+AI Acties:
+1. Gebruikt picnic_search met specifieke dieet zoekwoorden
+2. Gebruikt picnic_get_article om voedingswaarde informatie te controleren
+3. Gebruikt picnic_get_suggestions voor gezonde alternatieven
+4. Gebruikt picnic_add_to_cart alleen voor goedgekeurde items
+5. Volgt voedingsdoelen over meerdere maaltijden
+```
+
+### 📱 **Slimme Herbestelling**
+
+**Scenario**: Automatisch herbestellen van huishoudelijke essentials
+
+```
+Gebruiker: "Bestel mijn gebruikelijke wekelijkse essentials opnieuw en voeg wat nieuwe seizoensproducten toe"
+
+AI Acties:
+1. Gebruikt picnic_get_user_details om aankoopgeschiedenis te controleren
+2. Gebruikt picnic_get_wallet_transactions om reguliere aankopen te identificeren
+3. Gebruikt picnic_search om seizoensproducten te vinden
+4. Gebruikt picnic_add_to_cart voor zowel reguliere als nieuwe items
+5. Gebruikt picnic_get_delivery_slots voor handige planning
+```
+
+### 🎯 **Prijsvergelijking & Optimalisatie**
+
+**Scenario**: De beste waarde producten vinden in verschillende categorieën
+
+```
+Gebruiker: "Vergelijk prijzen voor biologische vs conventionele groenten deze week"
+
+AI Acties:
+1. Gebruikt picnic_search voor zowel biologische als conventionele items
+2. Gebruikt picnic_get_article om prijzen en maten te vergelijken
+3. Gebruikt picnic_get_categories om verschillende merken te verkennen
+4. Gebruikt picnic_get_suggestions voor vergelijkbare producten
+5. Geeft gedetailleerde kostenanalyse en aanbevelingen
+```
+
+### 🚚 **Bezorgervaring Beheer**
+
+**Scenario**: Bezorgervaring optimaliseren en feedback geven
+
+```
+Gebruiker: "Volg mijn bezorging en beoordeel de servicekwaliteit"
+
+AI Acties:
+1. Gebruikt picnic_get_delivery_position voor real-time tracking
+2. Gebruikt picnic_get_delivery_scenario voor chauffeur communicatie
+3. Gebruikt picnic_rate_delivery na voltooiing
+4. Gebruikt picnic_send_delivery_invoice_email voor administratie
+5. Gebruikt picnic_get_mgm_details om doorverwijsvoordelen te delen
+```
+
+### 💳 **Financiële Tracking**
+
+**Scenario**: Boodschappenbudget beheren en betalingsmethoden optimaliseren
+
+```
+Gebruiker: "Toon me mijn boodschappen uitgavenpatronen en optimaliseer mijn betalingsinstellingen"
+
+AI Acties:
+1. Gebruikt picnic_get_wallet_transactions voor uitgavenanalyse
+2. Gebruikt picnic_get_wallet_transaction_details voor gedetailleerde uitsplitsingen
+3. Gebruikt picnic_get_payment_profile om betalingsmethoden te bekijken
+4. Geeft inzichten over uitgaventrends en budget optimalisatie
+5. Stelt kostenbesparende strategieën voor gebaseerd op aankoopgeschiedenis
+```
+
+Deze gebruiksscenario's tonen hoe MCP Picnic eenvoudige boodschappen doen transformeert in een intelligente, gepersonaliseerde ervaring die tijd, geld en moeite bespaart terwijl je nooit essentiële items of optimale aanbiedingen mist.
+
 ---
 
 # MCP Picnic - KI-Gesteuerte Lebensmittel-Einkaufsassistent (Deutsch)
@@ -601,3 +943,174 @@ Der Server verwendet die in Ihren Umgebungsvariablen konfigurierten Anmeldedaten
 3. **Sitzungsverwaltung**: Ihre Sitzung wird für nachfolgende Anfragen beibehalten
 
 **Sicherheitshinweis**: Ihre Anmeldedaten werden nur zur Authentifizierung mit Picnics API verwendet und nicht dauerhaft gespeichert. Sie werden sicher über Umgebungsvariablen übertragen.
+
+## Anwendungsfälle
+
+Hier sind einige praktische Szenarien, in denen MCP Picnic Ihr Lebensmitteleinkaufserlebnis transformieren kann:
+
+### 🍽️ **Intelligente Mahlzeitenplanung**
+
+**Szenario**: Eine Woche voller gesunder Mahlzeiten für eine 4-köpfige Familie planen
+
+```
+Benutzer: "Plane 7 Abendessen für 4 Personen, Fokus auf mediterrane Diät, Budget €100"
+
+KI-Aktionen:
+1. Verwendet picnic_search um mediterrane Zutaten zu finden
+2. Verwendet picnic_get_suggestions für Rezeptideen
+3. Verwendet picnic_add_to_cart um Einkaufsliste zu erstellen
+4. Verwendet picnic_get_cart um Gesamtkosten zu überprüfen
+5. Verwendet picnic_get_delivery_slots um Lieferung zu planen
+```
+
+### 🛒 **Intelligenter Einkaufsassistent**
+
+**Szenario**: Ein spezifisches Rezept mit Diät-Ersatzstoffen nachkochen
+
+```
+Benutzer: "Ich möchte Lasagne machen, brauche aber glutenfreie und milchfreie Alternativen"
+
+KI-Aktionen:
+1. Verwendet picnic_search um glutenfreie Pasta zu finden
+2. Verwendet picnic_get_suggestions für milchfreie Käse-Alternativen
+3. Verwendet picnic_get_article um Zutatdetails zu prüfen
+4. Verwendet picnic_add_to_cart um geeignete Produkte hinzuzufügen
+5. Gibt Kochtipps und Ersatzverhältnisse
+```
+
+### 📦 **Lieferoptimierung**
+
+**Szenario**: Mehrere Lieferungen verwalten und Bestellungen verfolgen
+
+```
+Benutzer: "Wie ist der Status all meiner Bestellungen und wann kommen sie an?"
+
+KI-Aktionen:
+1. Verwendet picnic_get_deliveries um alle aktuellen Bestellungen anzuzeigen
+2. Verwendet picnic_get_delivery_position für Echtzeit-Tracking
+3. Verwendet picnic_get_delivery_scenario für Fahrerdetails
+4. Schlägt optimale Lieferzeiten mit picnic_get_delivery_slots vor
+5. Sendet Rechnungs-E-Mails mit picnic_send_delivery_invoice_email
+```
+
+### 💰 **Budgetbewusstes Einkaufen**
+
+**Szenario**: Innerhalb eines strengen Budgets einkaufen und dabei Qualität beibehalten
+
+```
+Benutzer: "Ich habe €50 für Lebensmittel diese Woche, hilf mir den Wert zu maximieren"
+
+KI-Aktionen:
+1. Verwendet picnic_search um budgetfreundliche Grundnahrungsmittel zu finden
+2. Verwendet picnic_get_categories um Rabattbereiche zu erkunden
+3. Verwendet picnic_get_cart um laufende Gesamtsumme zu verfolgen
+4. Verwendet picnic_remove_from_cart wenn Budget überschritten wird
+5. Verwendet picnic_get_wallet_transactions um Ausgabenmuster zu verfolgen
+```
+
+### 🏠 **Haushaltsmanagement**
+
+**Szenario**: Einkaufslisten für verschiedene Familienmitglieder verwalten
+
+```
+Benutzer: "Erstelle separate Einkaufslisten für wöchentliche Lebensmittel und Partybedarf"
+
+KI-Aktionen:
+1. Verwendet picnic_get_lists um bestehende Listen anzuzeigen
+2. Verwendet picnic_get_list um aktuelle Artikel zu überprüfen
+3. Verwendet picnic_search um party-spezifische Artikel zu finden
+4. Organisiert Artikel nach Kategorien mit picnic_get_categories
+5. Verwendet picnic_add_to_cart wenn bereit zum Bestellen
+```
+
+### 🎉 **Veranstaltungsplanung**
+
+**Szenario**: Ein Abendessen für 12 Gäste planen
+
+```
+Benutzer: "Ich veranstalte ein Abendessen für 12 Personen nächsten Samstag, hilf mir planen"
+
+KI-Aktionen:
+1. Verwendet picnic_search um Vorspeisen, Hauptgerichte und Dessert-Zutaten zu finden
+2. Verwendet picnic_get_suggestions für Weinpaarungen
+3. Verwendet picnic_get_delivery_slots um Freitag-Lieferung zu planen
+4. Verwendet picnic_set_delivery_slot um optimale Zeit zu buchen
+5. Verwendet picnic_get_article um Produktverfügbarkeit und Größen zu prüfen
+```
+
+### 🥗 **Gesundheits- & Diätmanagement**
+
+**Szenario**: Spezifische Diätanforderungen verwalten (Diabetes, Allergien)
+
+```
+Benutzer: "Finde kohlenhydratarme Optionen für ein diabetikerfreundliches Wochenmenü"
+
+KI-Aktionen:
+1. Verwendet picnic_search mit spezifischen Diät-Suchbegriffen
+2. Verwendet picnic_get_article um Nährwertinformationen zu prüfen
+3. Verwendet picnic_get_suggestions für gesunde Alternativen
+4. Verwendet picnic_add_to_cart nur für genehmigte Artikel
+5. Verfolgt Ernährungsziele über mehrere Mahlzeiten
+```
+
+### 📱 **Intelligente Nachbestellung**
+
+**Szenario**: Automatische Nachbestellung von Haushaltsessentials
+
+```
+Benutzer: "Bestelle meine üblichen wöchentlichen Essentials nach und füge neue saisonale Artikel hinzu"
+
+KI-Aktionen:
+1. Verwendet picnic_get_user_details um Kaufhistorie zu prüfen
+2. Verwendet picnic_get_wallet_transactions um regelmäßige Käufe zu identifizieren
+3. Verwendet picnic_search um saisonale Produkte zu finden
+4. Verwendet picnic_add_to_cart für sowohl reguläre als auch neue Artikel
+5. Verwendet picnic_get_delivery_slots für bequeme Planung
+```
+
+### 🎯 **Preisvergleich & Optimierung**
+
+**Szenario**: Die besten Wertprodukte in verschiedenen Kategorien finden
+
+```
+Benutzer: "Vergleiche Preise für Bio- vs. konventionelles Gemüse diese Woche"
+
+KI-Aktionen:
+1. Verwendet picnic_search für sowohl Bio- als auch konventionelle Artikel
+2. Verwendet picnic_get_article um Preise und Größen zu vergleichen
+3. Verwendet picnic_get_categories um verschiedene Marken zu erkunden
+4. Verwendet picnic_get_suggestions für ähnliche Produkte
+5. Bietet detaillierte Kostenanalyse und Empfehlungen
+```
+
+### 🚚 **Liefererfahrungsmanagement**
+
+**Szenario**: Liefererfahrung optimieren und Feedback geben
+
+```
+Benutzer: "Verfolge meine Lieferung und bewerte die Servicequalität"
+
+KI-Aktionen:
+1. Verwendet picnic_get_delivery_position für Echtzeit-Tracking
+2. Verwendet picnic_get_delivery_scenario für Fahrerkommunikation
+3. Verwendet picnic_rate_delivery nach Abschluss
+4. Verwendet picnic_send_delivery_invoice_email für Aufzeichnungen
+5. Verwendet picnic_get_mgm_details um Empfehlungsvorteile zu teilen
+```
+
+### 💳 **Finanzielle Verfolgung**
+
+**Szenario**: Lebensmittelbudget verwalten und Zahlungsmethoden optimieren
+
+```
+Benutzer: "Zeige mir meine Lebensmittelausgabenmuster und optimiere meine Zahlungseinstellungen"
+
+KI-Aktionen:
+1. Verwendet picnic_get_wallet_transactions für Ausgabenanalyse
+2. Verwendet picnic_get_wallet_transaction_details für detaillierte Aufschlüsselungen
+3. Verwendet picnic_get_payment_profile um Zahlungsmethoden zu überprüfen
+4. Bietet Einblicke in Ausgabentrends und Budgetoptimierung
+5. Schlägt kostensparende Strategien basierend auf Kaufhistorie vor
+```
+
+Diese Anwendungsfälle zeigen, wie MCP Picnic einfaches Lebensmitteleinkaufen in eine intelligente, personalisierte Erfahrung verwandelt, die Zeit, Geld und Aufwand spart und dabei sicherstellt, dass Sie nie wichtige Artikel oder optimale Angebote verpassen.
