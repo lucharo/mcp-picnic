@@ -5,11 +5,14 @@ FROM node:22-alpine AS builder
 # Set the working directory
 WORKDIR /app
 
-# Copy package files and source code
-COPY . .
+# Copy package files first for better caching
+COPY package*.json ./
 
-# Install dependencies
-RUN --mount=type=cache,target=/root/.npm npm install
+# Install ALL dependencies (including dev dependencies needed for build)
+RUN --mount=type=cache,target=/root/.npm npm ci
+
+# Copy source code and build files
+COPY . .
 
 # Build the application
 RUN npm run build
@@ -20,13 +23,17 @@ FROM node:22-alpine AS runtime
 # Set the working directory
 WORKDIR /app
 
+# Copy package files first
+COPY package*.json ./
+
+# Install only production dependencies
+RUN --mount=type=cache,target=/root/.npm npm ci --only=production
+
 # Copy built files from the builder stage
 COPY --from=builder /app/dist /app/dist
 COPY --from=builder /app/bin /app/bin
-COPY --from=builder /app/node_modules /app/node_modules
-COPY --from=builder /app/package.json /app/package.json
 
-# Environment variable for Contentful Management API token
+# Environment variable for Picnic credentials
 ENV PICNIC_USERNAME=Some_username
 ENV PICNIC_PASSWORD=Some_password
 
