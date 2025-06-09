@@ -8,8 +8,8 @@ WORKDIR /app
 # Copy package files first for better caching
 COPY package*.json ./
 
-# Install ALL dependencies (including dev dependencies needed for build)
-RUN --mount=type=cache,target=/root/.npm npm ci
+# Install ALL dependencies (including dev dependencies needed for build) but skip scripts
+RUN --mount=type=cache,target=/root/.npm npm ci --ignore-scripts
 
 # Copy source code and build files
 COPY . .
@@ -26,8 +26,8 @@ WORKDIR /app
 # Copy package files first
 COPY package*.json ./
 
-# Install only production dependencies
-RUN --mount=type=cache,target=/root/.npm npm ci --only=production
+# Install only production dependencies and skip scripts to avoid prepare hook
+RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev --ignore-scripts
 
 # Copy built files from the builder stage
 COPY --from=builder /app/dist /app/dist
