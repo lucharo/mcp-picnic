@@ -29,7 +29,7 @@
     "typecheck": "tsc --noEmit",
     "prepare": "npm run build",
     "inspect": "node -r dotenv/config ./scripts/inspect.js",
-    "inspect-watch": "node ./scripts/inspect-watch.js",
+    "inspect:watch": "node ./scripts/inspect-watch.js",
     "test": "vitest run --config vitest.config.ts",
     "test:watch": "vitest watch --config vitest.config.ts"
   },

@@ -177,19 +177,214 @@ toolRegistry.register({
 })
 
 // Get categories tool
-const categoriesInputSchema = z.object({
-  depth: z.number().min(0).max(5).default(0).describe("Category depth to retrieve"),
-})
-
 toolRegistry.register({
   name: "picnic_get_categories",
-  description: "Get product categories from Picnic",
-  inputSchema: categoriesInputSchema,
+  description: "Get product categories with flexible filtering for different use cases",
+  inputSchema: z.object({
+    depth: z
+      .number()
+      .min(0)
+      .max(3)
+      .default(0)
+      .describe("Category depth (0=top level, 1=with subcategories)"),
+    limit: z.number().min(1).max(20).default(8).describe("Maximum categories to return"),
+    includeImages: z.boolean().default(false).describe("Include image IDs"),
+    useCase: z
+      .enum(["browse", "search", "detailed"])
+      .default("browse")
+      .describe("Optimize for use case"),
+  }),
   handler: async (args) => {
     await ensureClientInitialized()
     const client = getPicnicClient()
     const categories = await client.getCategories(args.depth)
-    return categories
+
+    const catalogArray = (categories as any).catalog || []
+
+    // Adjust filtering based on use case
+    const getFieldsForUseCase = (useCase: string) => {
+      switch (useCase) {
+        case "search":
+          return ["id", "name", "type"] // Minimal for search filtering
+        case "detailed":
+          return ["id", "name", "type", "level", "items_count", "items"] // More context
+        default: // browse
+          return ["id", "name", "type", "items_count"] // Good balance
+      }
+    }
+
+    const relevantFields = getFieldsForUseCase(args.useCase || "browse")
+
+    const limitedCatalog = catalogArray.slice(0, args.limit || 8).map((category: any) => {
+      const filtered: any = {}
+
+      relevantFields.forEach((field) => {
+        if (field === "items_count") {
+          filtered.items_count = category.items ? category.items.length : 0
+        } else if (field === "items" && category.items && (args.depth || 0) > 0) {
+          filtered.items = category.items.slice(0, 3).map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            type: item.type,
+          }))
+        } else if (category[field] !== undefined) {
+          filtered[field] = category[field]
+        }
+      })
+
+      if (args.includeImages && category.image_id) {
+        filtered.image_id = category.image_id
+      }
+
+      return filtered
+    })
+
+    return {
+      type: categories.type,
+      catalog: limitedCatalog,
+      meta: {
+        total_categories: catalogArray.length,
+        returned: limitedCatalog.length,
+        use_case: args.useCase,
+        truncated: catalogArray.length > (args.limit || 8),
+        next_page_hint:
+          catalogArray.length > (args.limit || 8)
+            ? `Use limit=${(args.limit || 8) * 2} to see more categories`
+            : null,
+      },
+    }
+  },
+})
+
+// Get category details tool
+const categoryDetailsInputSchema = z.object({
+  categoryId: z.string().describe("The ID of the category to get details for"),
+  includeItems: z.boolean().default(true).describe("Include items/subcategories in this category"),
+  itemsLimit: z.number().min(1).max(50).default(20).describe("Maximum items to return"),
+  includeImages: z.boolean().default(false).describe("Include image IDs"),
+  depth: z
+    .number()
+    .min(0)
+    .max(3)
+    .default(1)
+    .describe("Category depth to fetch (0=top level, 1=with subcategories)"),
+})
+
+toolRegistry.register({
+  name: "picnic_get_category_details",
+  description: "Get detailed information about a specific category including its items",
+  inputSchema: categoryDetailsInputSchema,
+  handler: async (args) => {
+    await ensureClientInitialized()
+    const client = getPicnicClient()
+
+    // Find the category by ID (search recursively)
+    const findCategory = (categories: any[], targetId: string): any => {
+      for (const cat of categories) {
+        if (cat.id === targetId) {
+          return cat
+        }
+        if (cat.items && cat.items.length > 0) {
+          const found = findCategory(cat.items, targetId)
+          if (found) return found
+        }
+      }
+      return null
+    }
+
+    try {
+      // Try to get categories with the requested depth, fall back to lower depths if needed
+      let allCategories: any = null
+      let usedDepth = args.depth
+
+      for (let depth = args.depth ?? 1; depth >= 0; depth--) {
+        try {
+          allCategories = await client.getCategories(depth)
+          usedDepth = depth
+          break
+        } catch (error) {
+          if (depth === 0) {
+            // If even depth=0 fails, re-throw the error
+            throw error
+          }
+          // Continue to try lower depth
+        }
+      }
+
+      const catalogArray = allCategories.catalog || []
+      const categoryDetails = findCategory(catalogArray, args.categoryId)
+
+      if (!categoryDetails) {
+        return {
+          error: `Category with ID '${args.categoryId}' not found`,
+          categoryId: args.categoryId,
+          usedDepth,
+          suggestion: "Use picnic_get_categories to find valid category IDs.",
+        }
+      }
+
+      // Filter and structure the response
+      const filteredCategory: any = {
+        id: categoryDetails.id,
+        name: categoryDetails.name,
+        type: categoryDetails.type,
+        ...(categoryDetails.level && { level: categoryDetails.level }),
+        ...(args.includeImages &&
+          categoryDetails.image_id && { image_id: categoryDetails.image_id }),
+      }
+
+      // Handle items/subcategories
+      if (args.includeItems && categoryDetails.items) {
+        const items = categoryDetails.items.slice(0, args.itemsLimit).map((item: any) => {
+          // Check if it's a subcategory or a product
+          if (item.type === "CATEGORY") {
+            return {
+              id: item.id,
+              name: item.name,
+              type: item.type,
+              items_count: item.items ? item.items.length : 0,
+              ...(args.includeImages && item.image_id && { image_id: item.image_id }),
+            }
+          } else {
+            // It's a product
+            return {
+              id: item.id,
+              name: item.name,
+              type: item.type,
+              price: item.display_price,
+              unit: item.unit_quantity,
+              ...(args.includeImages && item.image_id && { image_id: item.image_id }),
+            }
+          }
+        })
+
+        filteredCategory.items = items
+        filteredCategory.items_count = categoryDetails.items.length
+        filteredCategory.items_returned = items.length
+      }
+
+      return {
+        category: filteredCategory,
+        meta: {
+          categoryId: args.categoryId,
+          includeItems: args.includeItems,
+          itemsLimit: args.itemsLimit,
+          usedDepth,
+          requestedDepth: args.depth,
+          truncated:
+            args.includeItems &&
+            categoryDetails.items &&
+            categoryDetails.items.length > (args.itemsLimit || 20),
+        },
+      }
+    } catch (error) {
+      return {
+        error: `Failed to get category details: ${error instanceof Error ? error.message : String(error)}`,
+        categoryId: args.categoryId,
+        suggestion:
+          "Make sure the category ID is valid. Use picnic_get_categories to find valid IDs.",
+      }
+    }
   },
 })
 
@@ -625,6 +820,64 @@ toolRegistry.register({
       message: "2FA code verified",
       code: args.code,
       result,
+    }
+  },
+})
+
+// Replace the entire picnic_analyze_response_size tool with this:
+toolRegistry.register({
+  name: "picnic_analyze_response_size",
+  description: "Analyze response size and structure for optimization",
+  inputSchema: z.object({
+    method: z
+      .enum([
+        "search",
+        "getSuggestions",
+        "getArticle",
+        "getCategories",
+        "getShoppingCart",
+        "getDeliverySlots",
+        "getDeliveries",
+        "getUserDetails",
+        "getLists",
+        "getWalletTransactions",
+      ])
+      .describe("API method to analyze"),
+    params: z.record(z.unknown()).optional().describe("Parameters for the API call"),
+  }),
+  handler: async (args) => {
+    await ensureClientInitialized()
+    const client = getPicnicClient()
+
+    let response: any
+
+    try {
+      switch (args.method) {
+        case "search":
+          response = await client.search((args.params?.query as string) || "apple")
+          break
+        case "getCategories":
+          response = await client.getCategories((args.params?.depth as number) || 0)
+          break
+        default:
+          return { error: "Method not implemented yet" }
+      }
+
+      const jsonString = JSON.stringify(response)
+      const sizeKB = Math.round((jsonString.length / 1024) * 100) / 100
+
+      return {
+        method: args.method,
+        sizeKB,
+        structure: Array.isArray(response)
+          ? `Array with ${response.length} items`
+          : typeof response,
+        sample: jsonString.substring(0, 200) + "...",
+      }
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error.message : String(error),
+      }
     }
   },
 })
