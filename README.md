@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/ivo-toby-mcp-picnic-badge.png)](https://mseep.ai/app/ivo-toby-mcp-picnic)
+
 # MCP Picnic - AI-Powered Grocery Shopping Assistant
 
 [![smithery badge](https://smithery.ai/badge/@ivo-toby/mcp-picnic)](https://smithery.ai/server/@ivo-toby/mcp-picnic)
