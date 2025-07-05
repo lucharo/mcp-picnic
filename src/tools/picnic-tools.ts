@@ -24,40 +24,58 @@ async function ensureClientInitialized() {
 
 // Helper function to filter cart data for LLM consumption
 function filterCartData(cart: unknown) {
-  if (!cart || typeof cart !== "object" || !("items" in cart)) return cart
+  if (!cart || typeof cart !== "object") return cart
 
   const cartObj = cart as {
     items?: unknown[]
     total_count?: number
     total_price?: number
+    checkout_total_price?: number
+    total_savings?: number
+    delivery_slots?: unknown[]
+    selected_slot?: unknown
     [key: string]: unknown
   }
 
-  return {
-    ...cartObj,
-    items: cartObj.items?.map((item: unknown) => {
-      const itemObj = item as {
-        id?: string
-        name?: string
-        display_price?: number
-        unit_quantity?: string
-        count?: number
-        image_id?: string
-        [key: string]: unknown
-      }
+  // Filter items to essential info only
+  const filteredItems = cartObj.items?.map((item: unknown) => {
+    const itemObj = item as {
+      id?: string
+      name?: string
+      display_price?: number
+      unit_quantity?: string
+      count?: number
+      price?: number
+      [key: string]: unknown
+    }
 
-      return {
-        id: itemObj.id,
-        name: itemObj.name,
-        price: itemObj.display_price,
-        unit: itemObj.unit_quantity,
-        quantity: itemObj.count,
-        ...(itemObj.image_id && { image_id: itemObj.image_id }),
+    return {
+      id: itemObj.id,
+      name: itemObj.name,
+      price: itemObj.display_price || itemObj.price,
+      unit: itemObj.unit_quantity,
+      quantity: itemObj.count,
+    }
+  })
+
+  // Summarize delivery slots instead of showing all
+  const deliverySlotsSummary = cartObj.delivery_slots
+    ? {
+        available_slots: cartObj.delivery_slots.length,
+        selected_slot: cartObj.selected_slot || "none",
+        hint: "Use picnic_get_delivery_slots for full slot details",
       }
-    }),
-    // Keep essential cart metadata
+    : undefined
+
+  return {
+    type: cartObj.type,
+    id: cartObj.id,
+    items: filteredItems,
     total_count: cartObj.total_count,
     total_price: cartObj.total_price,
+    checkout_total_price: cartObj.checkout_total_price,
+    total_savings: cartObj.total_savings,
+    delivery_slots_summary: deliverySlotsSummary,
   }
 }
 
@@ -135,22 +153,8 @@ toolRegistry.register({
   },
 })
 
-// Get article details tool
-const articleInputSchema = z.object({
-  productId: z.string().describe("The ID of the product to get details for"),
-})
-
-toolRegistry.register({
-  name: "picnic_get_article",
-  description: "Get detailed information about a specific product",
-  inputSchema: articleInputSchema,
-  handler: async (args) => {
-    await ensureClientInitialized()
-    const client = getPicnicClient()
-    const article = await client.getArticle(args.productId)
-    return article
-  },
-})
+// Note: picnic_get_article tool removed - endpoint deprecated (GitHub issue #23)
+// Use picnic_search instead for basic product information
 
 // Get product image tool
 const imageInputSchema = z.object({
@@ -881,3 +885,6 @@ toolRegistry.register({
     }
   },
 })
+
+// Note: picnic_debug_search_article diagnostic tool removed - no longer needed
+// since product detail endpoints are confirmed deprecated (GitHub issue #23)

@@ -42,13 +42,11 @@ Get product suggestions based on a query.
 
 - `query` (string): Query for product suggestions
 
-#### `picnic_get_article`
+#### ~~`picnic_get_article`~~ (REMOVED)
 
-Get detailed information about a specific product.
+**This tool has been removed** because the Picnic API deprecated product detail endpoints. See [GitHub issue #23](https://github.com/MRVDH/picnic-api/issues/23).
 
-**Parameters:**
-
-- `productId` (string): The ID of the product to get details for
+**Alternative:** Use `picnic_search` to get basic product information (id, name, price, unit).
 
 #### `picnic_get_categories`
 
