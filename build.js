@@ -4,7 +4,7 @@ await esbuild.build({
   bundle: true,
   platform: "node",
   format: "esm",
-  outfile: "./dist/bundle.js",
+  outfile: "./dist/index.js",
   target: "node18",
   banner: {
     js: `import { createRequire } from 'module';const require = createRequire(import.meta.url);`,
