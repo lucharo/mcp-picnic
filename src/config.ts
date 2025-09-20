@@ -10,6 +10,10 @@ const configSchema = z.object({
     .string()
     .transform((val) => val === "true")
     .default("false"),
+  PORT: z
+    .string()
+    .transform((val) => parseInt(val, 10))
+    .optional(),
   HTTP_PORT: z
     .string()
     .transform((val) => parseInt(val, 10))
@@ -17,4 +21,10 @@ const configSchema = z.object({
   HTTP_HOST: z.string().default("localhost"),
 })
 
-export const config = configSchema.parse(process.env)
+const parsedConfig = configSchema.parse(process.env)
+
+export const config = {
+  ...parsedConfig,
+  // Use PORT if available, otherwise fall back to HTTP_PORT, finally default to 8080
+  HTTP_PORT: parsedConfig.PORT ?? parsedConfig.HTTP_PORT ?? 8080,
+}

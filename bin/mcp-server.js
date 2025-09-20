@@ -34,7 +34,7 @@ async function main() {
    */
 
   // Import and run the bundled server after env vars are set
-  await import("../dist/bundle.js")
+  await import("../dist/index.js")
 }
 
 main().catch((error) => {

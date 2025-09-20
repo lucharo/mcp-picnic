@@ -5,14 +5,44 @@ import { StreamableHttpServer } from "./transports/streamable-http.js"
 import { config } from "./config.js"
 import { initializePicnicClient } from "./utils/picnic-client.js"
 
+// Parse command line arguments
+function parseArgs() {
+  const args = process.argv.slice(2)
+  const options = {
+    stdio: false,
+    port: config.HTTP_PORT,
+  }
+
+  for (let i = 0; i < args.length; i++) {
+    switch (args[i]) {
+      case '--stdio':
+        options.stdio = true
+        break
+      case '--port':
+        if (i + 1 < args.length) {
+          options.port = parseInt(args[i + 1], 10)
+          i++
+        }
+        break
+    }
+  }
+
+  return options
+}
+
 // Create and start the appropriate server
 async function runServer() {
   await initializePicnicClient()
 
-  if (config.ENABLE_HTTP_SERVER) {
+  const cliOptions = parseArgs()
+
+  // Use --stdio flag to force STDIO transport, otherwise use HTTP by default (framework requirement)
+  const useStdio = cliOptions.stdio || (!config.ENABLE_HTTP_SERVER && !cliOptions.stdio)
+
+  if (!useStdio) {
     // Start HTTP server
     const server = new StreamableHttpServer({
-      port: config.HTTP_PORT,
+      port: cliOptions.port,
       host: config.HTTP_HOST,
     })
 
