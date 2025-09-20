@@ -37,7 +37,7 @@ async function runServer() {
   const cliOptions = parseArgs()
 
   // Use --stdio flag to force STDIO transport, otherwise use HTTP by default (framework requirement)
-  const useStdio = cliOptions.stdio || (!config.ENABLE_HTTP_SERVER && !cliOptions.stdio)
+  const useStdio = cliOptions.stdio
 
   if (!useStdio) {
     // Start HTTP server
